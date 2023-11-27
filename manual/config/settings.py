@@ -1,3 +1,8 @@
+# Мануал по Django 4.2
+# https://docs.djangoproject.com/en/4.2/ref/
+# https://docs.djangoproject.com/en/4.2/topics/
+
+
 from pathlib import Path
 
 
@@ -19,6 +24,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django_manual',
 ]
 
 MIDDLEWARE = [
