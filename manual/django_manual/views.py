@@ -3,7 +3,11 @@ from django.shortcuts import render
 from django import forms
 from django.http import HttpResponse
 from django.views import generic, View
+from django.urls import reverse_lazy
 
+from datetime import date
+
+from .models import Author, Book
 
 """
 Decorators (Декораторы)
@@ -200,11 +204,6 @@ class CustomView(View):
 class CustomTemplateView(generic.TemplateView):
     template_name = 'view.html'
 
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['test'] = 'test str'
-        return context
-
 
 """
 3. RedirectView
@@ -224,3 +223,200 @@ class CustomRedirectView(generic.RedirectView):
     def get_redirect_url(self, *args: Any, **kwargs: Any) -> str | None:
         # ...
         return super().get_redirect_url(*args, **kwargs)
+    
+
+"""
+4. DetailView
+
+Содержит обьект (self.object) над которым работает представление.
+"""
+
+class CustomDetailView(generic.DetailView):
+    model = Author
+    template_name = 'object.html'
+
+
+"""
+5. ListView
+
+Содержит список обьектов (self.object_list) над которыми работает представление.
+"""
+
+class CustomListView(generic.ListView):
+    template_name = 'object-list.html'
+    model = Author
+
+
+"""
+6. FormView
+
+Представление, отображающее форму. В случае ошибки повторно отображает форму с ошибками проверки, в случае успеха перенаправляет на новый URL.
+"""
+
+class ContactForm(forms.Form):
+    name = forms.CharField()
+    message = forms.CharField(widget=forms.Textarea)
+
+    def send_email(self):
+        pass
+
+
+class CustomFormView(generic.FormView):
+    template_name = 'form-view.html'
+    form_class = ContactForm
+    success_url = '/views/View'
+
+    def form_valid(self, form: Any) -> HttpResponse:
+        form.send_email()
+        return super().form_valid(form)
+
+
+"""
+7. CreateView
+
+Представление, отображающее форму для создания обьекта, повторное отображение формы с ошибками проверки и сохранение обьекта.
+
+Атрибуты:
+    - template_name_suffix - суффикс шаблона.
+    - object - есть доступ к создаваемому обьекту (self.object). Если обьект еще не создан - None.
+Методы:
+    - get(request, *args, **kwargs)
+    - post(request, *args, **kwargs)
+"""
+
+class CustomCreateView(generic.CreateView):
+    model = Author
+    fields = '__all__'
+    success_url = '/views/View'
+    template_name = 'create-view.html'
+
+
+"""
+8. UpdateView
+
+Представление, отображающее форму редактирования существующего обьекта, повторное отображение формы с ошибками проверки и сохранение изменений в обьекте.
+"""
+
+class CustomUpdateView(generic.UpdateView):
+    model = Author
+    fields = '__all__'
+    template_name = 'create-view.html'
+    success_url = '/views/View'
+
+
+"""
+9. DeleteView
+
+Представление, отображающее страницу подтверждения и удаляющее существующий обьект.
+"""
+
+
+class CustomDeleteView(generic.DeleteView):
+    model = Author
+    success_url = reverse_lazy('class-view')
+    template_name = 'form-view.html'
+
+
+"""
+10. ArchiveIndexView
+
+Индексная страница вернего уровня, показывающая последние обьекты по дате.
+Обьекты с датой в будущем не включаются (allow_future).
+
+Контекст:
+    - date_list - QuerySet обьект, содержащий все годы, в которых есть обьекты.
+"""
+
+class CustomArchiveIndexView(generic.ArchiveIndexView):
+    model = Book
+    date_field = 'pubdate'
+    template_name = 'object-list.html'
+
+
+"""
+11. YearArchiveView
+
+
+Страница годового архива, показывающая все доступные месяцы в данном году.
+Обьекты с датой в будущем не отображаются (allow_future).
+
+Атрибуты:
+    - make_object_list - следует ли получить полный список обьектов за этот год и передать его в шаблон.
+    - get_make_object_list - будет ли возвращен список обьектов как часть контекста.
+Контекст:
+    - date_list - то же.
+    - year - date обьект, представляющий данный год.
+    - next_year - date обьект, представляющий первый день след. года в соотв. с allow_empty и allow_future.
+    - previous_year - date обьект, представляющий первый день предыдущего года в соотв. с allow_empty и allow_future.
+"""
+
+class CustomYearArchiveView(generic.YearArchiveView):
+    queryset = Book.objects.all()
+    date_field = 'pubdate'
+    make_object_list = True
+    template_name = 'object-list.html'
+    allow_future = True
+    # year = date(2023, 1, 1)
+
+
+"""
+12. MonthArchiveView
+
+Страница ежемесячного архива, показывающая все обьекты за определенный месяц.
+"""
+
+class CustomMonthArchiveView(generic.MonthArchiveView):
+    template_name = 'object-list.html'
+    queryset = Book.objects.all()
+    date_field = 'pubdate'
+    month_format = '%m'
+    allow_future = True
+
+
+"""
+13. WeekArchiveView
+
+Страница еженедельного архива, показывающая все обьекты за данную неделю.
+"""
+
+class CustomWeekArchiveView(generic.WeekArchiveView):
+    template_name = 'object-list.html'
+    queryset = Book.objects.all()
+    date_field = 'pubdate'
+    week_format = '%W'
+
+
+"""
+14. DayArchiveView
+
+Страница архива дня, показывающая все обьекты за определенный день.
+"""
+
+class CustomDayArchiveView(generic.DayArchiveView):
+    template_name = 'object-list.html'
+    queryset = Book.objects.all()
+    date_field = 'pubdate'
+
+
+"""
+15. TodayArchiveView
+
+Страница архива дня, показывающая все обьекты за сегодня.
+"""
+
+class CustomTodayArchiveView(generic.TodayArchiveView):
+    template_name = 'object-list.html'
+    queryset = Book.objects.all()
+    date_field = 'pubdate'
+
+
+"""
+16. DateDetailView
+
+Страница, представляющая отдельный обьект.
+"""
+
+class CustomDateDetailView(generic.DateDetailView):
+    template_name = 'object.html'
+    model = Book
+    date_field = 'pubdate'
