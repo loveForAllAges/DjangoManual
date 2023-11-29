@@ -1,0 +1,29 @@
++ 1. Models and databases
+- 2. Handling HTTP requests
+- 3. Working with forms
+- 4. Templates
+- 5. Class-based views
+- 6. Migrations
+- 7. Managing files
+- 8. Testing in Django
+- 9. User auth in Django
+- 10. Django's cache framework
+- 11. Conditional View Processing
+- 12. Cryptographic signing
+- 13. Sending email
+- 14. Internationalization and localization
+- 15. Logging
+- 16. Pagination
+- 17. Security in Django
+- 18. Performance and optimization
+- 19. Serializing Django objects
+- 20. Django settings
+- 21. Signals
+- 22. System check framework
+- 23. External packages
+- 24. Asynchronous support
+
+
+Доп:
+- 1. Applications
+- 2. ...
