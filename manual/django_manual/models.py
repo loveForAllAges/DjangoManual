@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.functions import Coalesce
+from django.db.models.query import QuerySet
 
 
 class Person(models.Model):
@@ -23,42 +25,70 @@ class Membership(models.Model):
     invite_reason = models.CharField(max_length=64)
 
 
-"""
-# Example
-
->>> ringo = Person.objects.create(name="Ringo Starr")
->>> paul = Person.objects.create(name="Paul McCartney")
->>> beatles = Group.objects.create(name="The Beatles")
->>> m1 = Membership(person=ringo, group=beatles, date_joined=date(1962, 8, 16), invite_reason="Needed a new drummed.")
->>> m1.save()
->>> beatles.members.all()
-<QuerySet [<Person: Ringo Starr>]>
->>> ringo.group_set.all()
-<QuerySet [<Group: The Beatles>]>
->>> beatles.members.add(paul, through_defaults={'date_joined': date(1960, 8, 1)})
->>> beatles.members.all()
-<QuerySet [<Person: Ringo Starr>, <Person: Paul McCartney>]>
->>> beatles.members.clear()
->>> beatles.members.all()
-<QuerySet []>
->>> beatles.members.create(name="George Harrison", through_defaults={'date_joined': date(1960, 8, 1)})
-<Person: George Harrison>
->>> beatles.members.all()
-<QuerySet [<Person: George Harrison>]>
->>> beatles.members.set([ringo, paul], through_defaults={'date_joined': date(1960, 8, 1)})
->>> beatles.members.all()
-<QuerySet [<Person: Ringo Starr>, <Person: Paul McCartney>]>
->>> beatles.members.all()
-<QuerySet [<Person: Ringo Starr>]>
->>> Group.objects.filter(members__name__startswith="Paul")
-<QuerySet [<Group: The Beatles>]>
->>> Person.objects.filter(group__name="The Beatles", membership__date_joined__gt=date(1960, 1, 1))
-<QuerySet [<Person: Ringo Starr>, <Person: Paul McCartney>]>
-"""
+# ---
 
 
+class Author(models.Model):
+    name = models.CharField(max_length=100)
+    age = models.IntegerField()
+
+
+class Publisher(models.Model):
+    name = models.CharField(max_length=300)
+
+
+class Book(models.Model):
+    name = models.CharField(max_length=300)
+    pages = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    rating = models.FloatField()
+    authors = models.ManyToManyField(Author)
+    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
+    pubdate = models.DateField(auto_now_add=True)
+
+
+class Store(models.Model):
+    name = models.CharField(max_length=300)
+    books = models.ManyToManyField(Book)
+
+
+# ---
+
+
+class PollManager(models.Manager):
+    # Чтобы изменить вывод .all() необходимо изменить get_queryset()
+    def get_queryset(self) -> QuerySet:
+        return super().get_queryset().filter(question="AA")
+
+    # Дополнительный метод, который можно вызвать OpinionPoll.test.with_counts().
+    def with_counts(self):
+        return self.annotate(num_responses=Coalesce(models.Count('response'), 0))
+
+
+class OpinionPoll(models.Model):
+    question = models.CharField(max_length=200)
+    objects = models.Manager() # Менеджер по умолчанию
+    test = PollManager() # Менеджер кастомный
+
+
+class Response(models.Model):
+    poll = models.ForeignKey(OpinionPoll, on_delete=models.CASCADE)
+
+
+class TablespaceExample(models.Model):
+    # Создается табличное пространство indexes
+    # Поле data также генерирует индекс, но табличное пространство tables
+    name = models.CharField(max_length=30, db_index=True, db_tablespace='indexes')
+    data = models.CharField(max_length=255, db_index=True)
+    shortcut = models.CharField(max_length=7)
+    edges = models.ManyToManyField(to='self', db_tablespace='indexes')
+
+    class Meta:
+        db_tablespace = 'tables'
+        indexes = [models.Index(fields=['shortcut'], db_tablespace='other_indexes')]
+
 """
-# Model field types
+# Model field types (Поля моделей)
 
 1. AutoField
 2. BigAutoField
@@ -128,7 +158,7 @@ class Membership(models.Model):
 
 
 """
-# Model field options
+# Model field options (Опции полей моделей)
 
 1. null
 2. blank
@@ -140,7 +170,7 @@ class Membership(models.Model):
 8. default
 9. editable
 10. error_messages
-11. help_textyf
+11. help_text
 12. primary_key
 13. unique
 14. unique_for_date
@@ -236,7 +266,7 @@ class Membership(models.Model):
 
 
 """
-# Model Meta options
+# Model Meta options (Мета опции моделей)
 
 1. abstract
 2. app_label
@@ -296,7 +326,7 @@ class Membership(models.Model):
 
 
 """
-# Model field attribute
+# Model field attribute (Атрибуты полей моделей)
 
 1. Field.auto_created - было ли поле создано автоматически.
 2. Field.concrete - имеет ли поле связанный с ним столбец DB.
@@ -375,7 +405,7 @@ filter(*args, **kwargs)[:5] - возвращает QuerySet, содержащи�
 filter(*args, **kwargs)[0] - возвращает QuerySet, содержащий один элемент по запросу.
 exclude(*args, **kwargs) - возвращает QuerySet, содержащий обьекты, которые не соответствуют заданным параметрам поиска.
 order_by(*fields) - принимает имена полей для сортировки QuerySet. Для рандома - "?".
-annotate(*args, **kwargs) - позволяет добавить в каждый обьект в QuerySet дополнительные данные.
+annotate(*args, **kwargs) - генерация агрегатов для каждого элемента в QuerySet. Позволяет добавить в каждый обьект в QuerySet дополнительные данные.
 alias(*args, **kwargs) - то же что и annotate, но вместо добавления данных, создает временую переменную с данными для послед. использования с другими методами.
 reverse() - переворачивает порядок элементов.
 distinct(*fields) - исключает повторяющиеся обьекты и возвращает новый QuerySet.
@@ -392,7 +422,7 @@ prefetch_related(*lookups) - возвращает QuerySet, который ав�
 extra(select=None, where=None, params=None, tables=None, order_by=None, select_params=None) - позволяет вставить свой SQL запрос (select: добавить в SELECT предложение доп. поля; where/tables: опреденить WHERE преложения; ...). Не рекомендуется к использованию. Не безопасен, так как способствует SQL-иньекции.
 defer(*fields) - принимает список полей для отложенного набора, которые обрабатываются только при вызове. Полезно для больших данных.
 only(*fields) - противоположен defer(). перечисленные поля загружаются немедленно.
-using(alias) - контроль вызываемой DB, если используется несколько (alias: имя DB из DATABASES)).
+using('alias') - выбор вызываемой DB, если используется несколько (alias: имя DB из DATABASES)).
 select_for_update(nowait=False, skip_locked=False, of=(), no_key=False) - возвращает набор запросов, который будет блокировать строки DB до конца транзакции. Полезно, когда необходимо гарантировать неизменность строк другими транзакциями.
 raw(raw_query, params=(), translations=None, using=None) - берет необработанный SQL-запрос и возвращает RawQuerySet.
 bulk_create(objs, batch_size=None, ignore_conflicts=False, update_conflicts=False, update_fields=None, unique_fields=None) - эффективное добавление списка обьектов DB одним запросом. Возвращает созданные обьекты списком (batch_size: сколько обьектов создается в одном запросе; ignore_conflicts: игнор. ошибок; update_conflicts: обновлять ли поля, если вставка строки не удалась.).
@@ -404,13 +434,13 @@ latest(*fields) - возвращает последний обьект в таб
 earliest(*fields) - наоборот latest().
 first() - возвращает первый обьект, соответ. набору запросов.
 last() - наоборот first().
-aggregate(*args, **kwargs) - возвращает словарь значений с доп. данными.
+aggregate(*args, **kwargs) - позволяет выполнить вычисления данными DB. Возвращает результат работы агрегатного запроса.
 exists() - есть ли результаты в QuerySet.
 contains(obj) - содержит ли QuerySet obj.
 update(**kwargs) - выполняет запрос обновления SQL для указанных полей и возвращает кол-во строк. Выполняется моментально.
 delete() - Выполняет SQL-запрос на удаление для всех строк в QuerySet и возвращает количество удаленных объектов, а также словарь с количеством удалений для каждого типа объекта.
 as_manager() - возвращает экземпляр Manager с копией QuerySet.
-explain(format=None, **options) - возвращает строку QuerySet с планом выполнения запроса.
+explain(format=None, **options) - возвращает подробную информацию о том, как БД выполняет запрос, включая индексы и соединения. Используется для оценки запроса для оптимизации.
 
 
 
@@ -484,4 +514,303 @@ Reporter.objects.filter(name='John').update(stories_filed=F('stories_filed') + 1
 17. Exists(queryset) - подкласс Subquery, использующий EXISTS оператор SQL.
 18. When(condition=None, then=None, **lookups) - обьект для инкапсуляции условия и его результата для использования в выражении.
 19. Case(*cases, **extra) - выражение похоже на if, elif, else. Каждый condition оценивается по порядку пока не будет получено истинное значение.
+20. Avg(expression, output_field=None, distinct=False, filter=None, default=None, **extra) - возвращает среднее значение заданного числового выражения.
 """
+
+
+"""
+class Manager
+ - интерфейс, предоставляющий запросы к DB моделям Django. У каждой модели есть хотя бы один Manager.
+
+Выполнение необработанных запросов. Написание чистого SQL.
+
+Manager.raw(raw_query, params=(), translations=None).
+Person.objects.raw("SELECT * FROM myapp_person") == Person.objects.all().
+Ожидается что будет возвращен набор строк DB, никаких проверок нет.
+
+Способы:
+1.
+name_map = {'first': 'first_name', 'last': 'last_name', 'pk': 'id'}
+Person.objects.raw("SELECT * FROM some_other_table", translations=name_map)
+2.
+lname = 'Doe'
+Person.objects.raw("SELECT * FROM myapp_person WHERE last_name = %s", [lname])
+
+Выполнение пользовательского SQL.
+- django.db.connection
+
+connection.cursor() - получение обьекта курсора.
+cursor.execute(sql, [params]), cursor.fetchone(), cursor.fetchall().
+```python
+from django.db import connection
+
+with connection.cursor() as cursor:
+    cursor.execute("UPDATE bar SET foo = 1 WHERE baz = %s", [baz])
+    cursor.execute("SELECT foo FROM bar WHERE baz = %s", [baz])
+    row = cursor.fetchone()
+```
+
+Чтобы защититься от SQL-иньекций, не нужно заключать в кавычки заполнители %s.
+"""
+
+
+"""
+Транзакции DB.
+
+
+Прежде чем вызвать функцию просмотра, запускается транзакция. Если ответ получен, то транзакция фиксируется, если нет, то удаляется.
+Если ATOMIC_REQUESTS включен, то чтобы выключить транзакцию для представления используют non_atomic_requests декоратор.
+
+Управление транзакциями
+1. atomic(using=None, savepoint=True, durable=False) - (using: имя DB; savepoint: управление точками сохранения; durable:).
+```python
+from django.db import transaction
+@transaction.atomic
+def viewfunc(request):
+    pass
+```
+ИЛИ
+```python
+with transaction.atomic():
+    pass
+```
+ИЛИ
+```python
+try:
+    with transaction.atomic():
+        pass
+except:
+    pass
+```
+
+2. on_commit(func, using=None, robust=False) - вызываемые методы после успешной фиксации транзакции (robust: выполнение обратных вызовов).
+
+"""
+
+
+"""
+# Список SQL запросов
+
+Доступно только при DEBUG=True
+
+from django.db import connection, reset_queries
+
+connection.queries - получить список запросов
+connection.queries.clear() - очистить список запросов
+reset_queries() - очиситить список запросов
+"""
+
+
+"""
+Разработка проекта
+
+Рекомендуется использовать django-debug-toolbar для контроля DB.
+"""
+
+
+"""
+Database access optimization (Оптимизация доступа к БД).
+
+Методы оптимизации:
+1. Использование индексов. Индексы к частозапрашиваемым полям ускоряют поиск по БД.
+2. Понимание QuerySet. Важно понимать как работает QuerySet для хорошей производительности.
+3. Использование filters, F(), annotate.
+4. Использование RawSQL.
+5. Использование чистого SQL.
+6. select_related(), prefetch_related() - получение всех данных за один запрос.
+7. values(), values_list() - если нужны только словарь или список значений и не нужны модели ORM.
+8. defer(), only() - управление столбцами БД, которые точно не понадобятся.
+9. count() != len(queryset) - только подсчет, а не выполнение. Не злоупотреблять.
+10. update(), delete() - массовое удаление и обновление выгодней не массовой.
+11. entry.blog_id != entry.blog.id - если нужно получить только внешний ключ.
+12. bulk_create() - массовое создание обьектов выгодно поочередного.
+13. bulk_update() - массовое обновление обьектов выгодней поочередного.
+14. add() - массовая вставка ManyToManyField уменьшает кол-во запросов.
+15. remove() - массовое удаление обьектов ManyToManyField выгоднее одиночного.
+"""
+
+
+"""
+Контроллирование запросов.
+
+def blocker(execute, sql, params, many, context):
+    raise Exception('No database access allowed here')
+ИЛИ
+class QueryLogger:
+    def __init__(self):
+        self.queries = []
+    
+    def __call__(self, execute, sql, params, many, context):
+        current_query = {"sql": sql, "params": params, "many": many}
+        start = time.monotonic()
+        try:
+            result = execute(sql, params, many, context)
+        except Exception as e:
+            current_query["status"] = "error"
+            current_query["exception"] = e
+            raise
+        else:
+            current_query["status"] = "ok"
+            return result
+        finally:
+            duration = time.monotonic() - start
+            current_query["duration"] = duration
+            self.queries.append(current_query)
+    
+def my_view(request):
+    with connection.execute_wrapper(blocker):
+        return render(request, template_name, context)
+"""
+
+
+"""
+ManyToMany relationships (Отношения многие ко многим). Пример
+
+
+>>> from django_manual.models import Publication, Article
+>>> p1 = Publication(title='pub1')
+>>> p2 = Publication(title='pub2')
+>>> p3 = Publication(title='pub3')
+>>> Publication.objects.bulk_create([p1,p2,p3])
+[<Publication: pub1>, <Publication: pub2>, <Publication: pub3>]
+>>> Article(headline='headline1')
+<Article: headline1>
+>>> Article(headline='headline1').save()
+>>> a1 = Article.objects.get(headline='headline1')
+>>> a1.publications.add(p1,p2)
+>>> a2 = Article(headline='headline2')
+>>> a2.save()
+>>> a2.publications.add(p2,p3)
+>>> p4 = a2.publications.create(title='pub4')
+>>> a2.publications.all()
+<QuerySet [<Publication: pub2>, <Publication: pub3>, <Publication: pub4>]>
+>>> p2.article_set.all()
+<QuerySet [<Article: headline1>, <Article: headline2>]>
+>>> Article.objects.filter(publications__id=1)
+<QuerySet [<Article: headline1>]>
+>>> Article.objects.filter(publications__title__startswith='pub')
+<QuerySet [<Article: headline1>, <Article: headline1>, <Article: headline2>, <Article: headline2>, <Article: headline2>]>
+>>> Article.objects.filter(publications__title__startswith='pub').distinct()
+<QuerySet [<Article: headline1>, <Article: headline2>]>
+>>> Article.objects.filter(publications__title__startswith='pub').count()
+5
+>>> Article.objects.filter(publications__title__startswith='pub').distinct().count()
+2
+>>> Article.objects.exclude(publications=p1)
+<QuerySet [<Article: headline2>]>
+>>> p1.delete()
+(2, {'django_manual.Article_publications': 1, 'django_manual.Publication': 1})
+>>> a2.delete()
+(4, {'django_manual.Article_publications': 3, 'django_manual.Article': 1})
+>>> p2.article_set.all()
+<QuerySet [<Article: headline1>]>
+>>> p2.article_set.remove(a1)
+"""
+
+class Publication(models.Model):
+    title = models.CharField(max_length=30)
+
+    class Meta:
+        ordering = ['title']
+
+    def __str__(self) -> str:
+        return self.title
+    
+
+class Article(models.Model):
+    headline = models.CharField(max_length=100)
+    publications = models.ManyToManyField(Publication)
+
+    class Meta:
+        ordering = ['headline']
+
+    def __str__(self) -> str:
+        return self.headline
+
+
+"""
+ManyToOne relationships (Отношения многие к одному). Пример
+
+
+>>> r = Reporter(first_name='John', last_name='Smith', email='john@example.com')
+>>> r.save()
+>>> r2 = Reporter(first_name='Paul', last_name='Jones', email='paul@example.com')
+>>> r2.save()
+>>> a = Article2(id=None, headline='headline1', pub_date=date(2005, 7, 27), reporter=r)
+>>> a.save()
+>>> a.reporter_id
+1
+>>> a.reporter
+<Reporter: John Smith>
+>>> a2 = Article2.objects.create(headline='headline2', pub_date=date(2000, 10, 10), reporter=r2)
+>>> a2
+<Article2: headline2>
+>>> a3 = r.article2_set.create(headline='headline3', pub_date=date(2001, 11, 11))
+>>> r.article2_set.all()
+<QuerySet [<Article2: headline1>, <Article2: headline3>]>
+>>> r.article2_set.count()
+2
+
+"""
+
+class Reporter(models.Model):
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    email = models.EmailField()
+
+    def __str__(self) -> str:
+        return self.first_name + ' ' + self.last_name
+    
+
+class Article2(models.Model):
+    headline = models.CharField(max_length=100)
+    pub_date = models.DateField()
+    reporter = models.ForeignKey(Reporter, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return self.headline
+    
+    class Meta:
+        ordering = ['headline']
+
+
+"""
+OneToOne relationships (отношения один к одному). Примеры.
+
+
+>>> p1 = Place(name='place1', address='address1')
+>>> p1.save()
+>>> p2 = Place(name='place2', address='address2')
+>>> p2.save()
+>>> r = Restaurant(place=p1)
+>>> r.save()
+>>> p1.restaurant
+<Restaurant: place1>
+>>> r.place
+<Place: place1>
+>>> w = r.waiter_set.create(name='w1')
+"""
+
+
+class Place(models.Model):
+    name = models.CharField(max_length=50)
+    address = models.CharField(max_length=80)
+
+    def __str__(self) -> str:
+        return self.name
+    
+
+class Restaurant(models.Model):
+    place = models.OneToOneField(Place, on_delete=models.CASCADE, primary_key=True)
+    serves_hot_dogs = models.BooleanField(default=False)
+    serves_pizza = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return self.place.name
+
+
+class Waiter(models.Model):
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+
+    
