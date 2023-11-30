@@ -156,22 +156,6 @@ Class-based views API (Представления на основе классо
 14. DayArchiveView
 15. TodayArchiveView
 16. DateDetailView
-17. ContextMixin
-18. TemplateResponseMixin
-19. SingleObjectMixin
-20. SignleObjectTemplateResponseMixin
-21. MultipleObjectMixin
-22. MultipleObjectTemplateResponseMixin
-23. FormMixin
-24. ModelFormMixin
-25. ProcessFormView
-26. DeletionMixin
-27. YearMixin
-28. MonthMixin
-29. DayMixin
-30. WeekMixin
-31. DateMixin
-32. BaseDateListMixin
 """
 
 """
