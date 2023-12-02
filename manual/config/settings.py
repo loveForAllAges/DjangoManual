@@ -29,6 +29,11 @@ INSTALLED_APPS = [
     'django_manual',
 ]
 
+
+# Серверная часть SMTP для отправки электронных писем
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     # Включения функциональности сессий
