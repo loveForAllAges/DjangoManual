@@ -1,5 +1,6 @@
 from django.urls import path, include
 from .views import *
+from django.views.generic import TemplateView
 
 
 views_urlpatterns = [
@@ -23,7 +24,8 @@ views_urlpatterns = [
 
 
 urlpatterns = [
-    path('', upload_file),
+    path('', TemplateView.as_view(template_name='index.html')),
+    path('upload_file', upload_file),
     path('2', FileFieldFormView.as_view()),
     path('views/', include(views_urlpatterns)),
 ]

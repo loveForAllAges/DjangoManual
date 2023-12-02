@@ -47,9 +47,13 @@ ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
+        # путь к классу шаблонов, реализующий API шаблонов Django.
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        # Список каталогов, в которых движок должен искать исходные файлы шаблонов в порядке поиска.
         'DIRS': [],
+        # Должен ли движок искать шаблоны внутри установленных приложений.
         'APP_DIRS': True,
+        # Настройки для серверной части.
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
