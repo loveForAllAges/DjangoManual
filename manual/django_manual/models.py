@@ -3,6 +3,14 @@ from django.db.models.functions import Coalesce
 from django.db.models.query import QuerySet
 
 
+class Animal(models.Model):
+    name = models.CharField(max_length=64)
+    sound = models.CharField(max_length=32)
+
+    def speak(self):
+        return self.sound
+
+
 class Person(models.Model):
     name = models.CharField(max_length=128)
 
