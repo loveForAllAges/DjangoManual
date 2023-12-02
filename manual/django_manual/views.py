@@ -5,6 +5,8 @@ from django.http import HttpResponse
 from django.views import generic, View
 from django.urls import reverse_lazy
 
+import asyncio
+
 from datetime import date
 
 from .models import Author, Book
@@ -404,3 +406,30 @@ class CustomDateDetailView(generic.DateDetailView):
     template_name = 'object.html'
     model = Book
     date_field = 'pubdate'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+Раздел: Class-based views (представления на основе классов).
+
+
+Асинхронные представления
+"""
+
+
+class AsyncView(View):
+    async def get(self, request, *args, **kwargs):
+        await asyncio.sleep(10)
+        return HttpResponse('Hello async world!')

@@ -2,9 +2,9 @@
 + 2. Handling HTTP requests
 + 3. Working with forms
 + 4. Templates
-- 5. Class-based views
-- 6. Migrations
-- 7. Managing files
++ 5. Class-based views
++ 6. Migrations
++ 7. Managing files
 - 8. Testing in Django
 - 9. User auth in Django
 - 10. Django's cache framework

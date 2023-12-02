@@ -24,6 +24,7 @@ views_urlpatterns = [
 
 
 urlpatterns = [
+    path('as', AsyncView.as_view()),
     path('', TemplateView.as_view(template_name='index.html')),
     path('upload_file', upload_file),
     path('2', FileFieldFormView.as_view()),
