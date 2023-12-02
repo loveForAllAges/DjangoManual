@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
+from .sessions import post_comment, delete_comment
 
 
 """
@@ -94,4 +95,6 @@ urlpatterns = [
     path('', include('django_manual.urls')),
     path('admin/', admin.site.urls),
     path('django_manual/', include('django_manual.urls')),
+    path('test_session', post_comment),
+    path('delete_session', delete_comment),
 ]

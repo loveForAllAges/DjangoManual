@@ -1,5 +1,5 @@
 + 1. Models and databases
-- 2. Handling HTTP requests
++ 2. Handling HTTP requests
 - 3. Working with forms
 - 4. Templates
 - 5. Class-based views
