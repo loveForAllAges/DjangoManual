@@ -12,8 +12,8 @@
 - 12. Cryptographic signing
 + 13. Sending email
 + 14. Internationalization and localization
-- 15. Logging
-- 16. Pagination
++ 15. Logging
++ 16. Pagination
 - 17. Security in Django
 - 18. Performance and optimization
 - 19. Serializing Django objects
