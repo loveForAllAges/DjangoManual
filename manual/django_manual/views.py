@@ -433,3 +433,17 @@ class AsyncView(View):
     async def get(self, request, *args, **kwargs):
         await asyncio.sleep(10)
         return HttpResponse('Hello async world!')
+    
+
+
+
+
+import logging
+
+
+logger = logging.getLogger('custom_logger')
+
+
+def logging_view(request):
+    logger.info('Logging view')
+    return HttpResponse('Logging view')

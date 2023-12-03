@@ -10,7 +10,7 @@
 - 10. Django's cache framework
 - 11. Conditional View Processing
 - 12. Cryptographic signing
-- 13. Sending email
++ 13. Sending email
 + 14. Internationalization and localization
 - 15. Logging
 - 16. Pagination

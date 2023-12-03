@@ -27,7 +27,7 @@ class SimpleMiddleware:
 
     def __call__(self, request) -> Any:
         # Код до представления
-        print('OK')
+        # print('OK')
         response = self.get_response(request)
         # Код после вызова представления
         return response
