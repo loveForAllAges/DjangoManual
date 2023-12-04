@@ -6,7 +6,7 @@
 + 6. Migrations
 + 7. Managing files
 + 8. Testing in Django
-- 9. User auth in Django
++ 9. User auth in Django
 - 10. Django's cache framework
 + 11. Conditional View Processing
 - 12. Cryptographic signing

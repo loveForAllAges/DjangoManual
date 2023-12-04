@@ -45,9 +45,6 @@ django.contrib.auth.password_validation
 """
 
 
-from django.contrib.auth.backends
-
-
 # Кастомный валидатор
 class CustomValidator:
     def __init__(self, min_length) -> None:
