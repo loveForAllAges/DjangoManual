@@ -1,6 +1,16 @@
 from django.db import models
 from django.db.models.functions import Coalesce
 from django.db.models.query import QuerySet
+import datetime
+
+
+class Blog(models.Model):
+    name = models.CharField(max_length=32)
+
+
+class Entry(models.Model):
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
+    published = models.DateTimeField(default=datetime.datetime.now)
 
 
 class Animal(models.Model):

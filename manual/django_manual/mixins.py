@@ -18,6 +18,11 @@ from django.views import generic
 14. WeekMixin
 15. DateMixin
 16. BaseDateListMixin
+
+17. LoginRequiredMixin
+18. UserPassesTestMixin
+19. PermissionRequiredMixin
+20. AccessMixin
 """
 
 
@@ -289,4 +294,52 @@ from django.views import generic
     - get_dated_queryset(**lookup) - возвращает набор запросов, отфильтрованный с использованием аргументов запроса.
     - get_date_list_period() - возвращает период агрегирования для date_list. По умолчанию date_list_period.
     - get_date_list(queryset, date_type=None, ordering='ASC') - возвращает список дат date_type для которого содержатся записи queryset.
+"""
+
+"""
+17. LoginRequiredMixin
+
+
+Аналогичен login_required.
+
+Все запросы неаутентифицированных пользователей, либо LOGIN_URL, либо 403.
+"""
+
+"""
+18. UserPassesTestMixin
+
+
+Аналогичен user_passes_test.
+
+Методы:
+    - test_func() - функция для проверки.
+    - get_test_func() - переопределение названия функции проверки test_func.
+"""
+
+"""
+19. PermissionRequiredMixin
+
+
+Аналогичен permission_required.
+Методы и параметры:
+    - permission_required - список разрешений.
+    - get_permission_required() - возвращает список имен разрешений. По умолчанию permission_required.
+    - has_permission() - возвращает логическое значение, указывающее имеет ли пользователь разрешение. По умолчанию результат has_perms() для get_permission_required().
+"""
+
+"""
+20. AccessMixin
+
+
+Настраивает поведение представления, когда доступ запрещен.
+
+Методы и атрибуты:
+    - login_url - значение для get_login_url(). По умолчанию LOGIN_URL.
+    - permission_denied_message - значение для get_permission_denied_message(). По умолчанию пустая строка.
+    - redirect_field_name - значение для get_redirect_field_name(). По умолчанию 'next'.
+    - raise_exception - если True, PermissionDenied, когда условие не выполняется, иначе редирект нв login_url. По умолчанию False.
+    - get_login_url() - возвращает URL-адрес для редиректа, если тест не пройден.
+    - get_permission_denied_message() - если raise_exception=True, то возвращает permission_denied_message сообщение об ошибке.
+    - get_redirect_field_name() - возвращает URL-адрес для перенаправления после успешного входа в систему. По умолчанию redirect_field_name.
+    - handle_no_permission() - либо вызывает PermissionDenied, либо перенаправляет на login_url.
 """

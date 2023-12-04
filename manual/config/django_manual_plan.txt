@@ -8,7 +8,7 @@
 + 8. Testing in Django
 - 9. User auth in Django
 - 10. Django's cache framework
-- 11. Conditional View Processing
++ 11. Conditional View Processing
 - 12. Cryptographic signing
 + 13. Sending email
 + 14. Internationalization and localization
@@ -16,7 +16,7 @@
 + 16. Pagination
 - 17. Security in Django
 - 18. Performance and optimization
-- 19. Serializing Django objects
++ 19. Serializing Django objects
 - 20. Django settings
 - 21. Signals
 - 22. System check framework

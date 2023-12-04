@@ -158,6 +158,15 @@ Class-based views API (Представления на основе классо
 14. DayArchiveView
 15. TodayArchiveView
 16. DateDetailView
+
+17. LoginView
+18. LogoutView
+19. PasswordChangeView
+20. PasswordChangeDoneView
+21. PasswordResetView
+22. PasswordResetDoneView
+23. PasswordResetConfirmView
+24. PasswordResetCompleteView
 """
 
 """
@@ -408,13 +417,158 @@ class CustomDateDetailView(generic.DateDetailView):
     date_field = 'pubdate'
 
 
+"""
+17. LoginView
 
 
+При GET отображает форму входа. При POST пытается войти в систему. Если успешно, то редирект на 'next' или LOGIN_REDIRECT_URL, иначе форма отображается заново.
+
+Контекст:
+    - form - обьект Form.
+    - next - URL-адрес для редиректа.
+    - site - текущий Site в соответствии с SITE_ID.
+    - site_name - имя для site.name. По умолчанию request.META['SERVER_NAME']
+
+Методы и атрибуты:
+    - template_name - имя шаблона.
+    - next_page - URL. По умолчанию LOGIN_REDIRECT_URL.
+    - redirect_field_name - имя поля GET запроса, содержащего URL. По умолчанию next.
+    - authentication_form - класс формы. По умолчанию AuthenticationForm.
+    - extra_context - словарь доп. контекстных данных.
+    - redirect_authenticated_user - будут ли аутентифицированные пользователи перенапраляться. По умолчанию False.
+    - success_url_allowed_hosts - несколько set хостов, помимо request.get_host(), которые можно безопасно перенаправить после входа в систему. По умолчанию пустой set.
+    - get_default_redirect_url() - URL. По умолчанию next_page или LOGIN_REDIRECT_URL.
+"""
 
 
+"""
+18. LogoutView
 
 
+Выводит пользователя из системы POST запросом.
 
+Контекст:
+    - title - строка "Выход из системы."
+    - site - текущий Site в соответствии с SITE_ID.
+    - site_name - имя для site.name. По умолчанию request.META['SERVER_NAME']
+
+Атрибуты:
+    - next_page - URL. По умолчанию LOGOUT_REDIRECT_URL.
+    - template_name - то же самое.
+    - redirect_field_name - то же самое.
+    - extra_context - то же самое.
+    - success_url_allowed_hosts - то же самое.
+
+"""
+
+
+"""
+19. PasswordChangeView
+
+
+Изменение пароля.
+
+Контекст:
+    - form - форма смены пароля.
+
+Атрибуты:
+    - template_name - то же самое.
+    - success_url - URL. По умолчанию 'password_change_done'.
+    - form_class - класс формы. По умолчанию PasswordChangeForm.
+    - extra_context - то же самое.
+"""
+
+
+"""
+20. PasswordChangeDoneView
+
+
+Страница, отображаемая после того, как пользователь сменил пароль.
+
+Атрибуты:
+    - template_name - имя шаблона.
+    - extra_context - то же самое.
+"""
+
+
+"""
+21. PasswordResetView
+
+
+Сброс пароля пользователя, создание одноразовой ссылки для сброса пароля и отправка этой ссылки на почту пользователя.
+Отправит письмо, если: почта существует в БД, пользователь активен, пользователь имеет пригодный пароль.
+
+Контекст эл. письма:
+    - email - user.email.
+    - user - User.
+    - site_name - site.name.
+    - domain - site.domain.
+    - protocol - http/https.
+    - uid - id пользователя, закодированный в base64.
+    - token - токен для проверки ссылки сброса. 
+
+Пример письма:
+Someone asked for password reset for email {{ email }}. Follow the link below:
+{{ protocol}}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}
+
+Атрибуты:
+    - template_name.
+    - form_class - форма. По умолчанию PasswordResetForm.
+    - email_template_name - имя шаблона эл. письма.
+    - subject_template_name - имя шаблона темы эл. письма.
+    - token_generator - экз. класса для проверки одноразовой ссылки. По умолчанию default_token_generator.
+    - success_url.
+    - from_email - адрес эл. почты. По умолчанию DEFAULT_FROM_EMAIL.
+    - extra_context.
+    - html_email_template_name - имя шаблона эл. письма в формате text/html. По умолчанию не создается. 
+    - extra_email_context - словарь контекстных данных.
+"""
+
+
+"""
+22. PasswordResetDoneView
+
+
+Страница, отображаемая после того, как пользователю было отправлено письмо для сброса пароля.
+
+Атрибуты:
+    - template_name.
+    - extra_context.
+"""
+
+
+"""
+23. PasswordResetConfirmView
+
+
+Страница с формой ввода нового пароля.
+
+Аргументы из URL:
+    - uid64 - id пользователя в кодировке base64.
+    - token - токен проверки правильности пароля.
+
+Атрибуты:
+    - template_name.
+    - token_generator.
+    - post_reset_login - аутентифицировать ли пользователя после сброса пароля. По умолчанию False.
+    - post_reset_login_backend - требуется если несколько AUTHENTICATION_BACKENDS. По умолчанию None.
+    - form_class - форма. По умолчанию SetPasswordForm.
+    - success_url.
+    - extra_context.
+    - reset_url_token - параметр токена. По умолчанию 'set-password'.
+"""
+
+
+"""
+24. PasswordResetCompleteView
+
+
+Страница об успешном изменении пароля.
+
+Атрибуты:
+    - template_name.
+    - extra_context.
+"""
 
 
 

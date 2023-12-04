@@ -16,12 +16,15 @@ SECRET_KEY = 'django-insecure-_m7#wcewdv(+n%gbx)g5nn*!xhtoqvts5+9jmhr+hc=q!#2hu%
 
 DEBUG = True
 
+
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver']
 
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    # Ядро структуры аутентификации и ее модели по умолчанию. Создание разрешений по умолчанию (CRUD) для каждой модели.
     'django.contrib.auth',
+    # Система типов контента, которая позволяет связывать разрешения с моделями
     'django.contrib.contenttypes',
     # Подключение сессий, поддерживаемых БД
     'django.contrib.sessions',
@@ -36,12 +39,53 @@ INSTALLED_APPS = [
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 
+# Список механизмов аутентификации
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend'
+]
+# Модель пользователя
+AUTH_USER_MODEL = 'auth.User'
+# Список классов алгоритмов хеширования. Django будет использовать PBKDF2
+# для хранения паролей, но будет поодерживать проверку паролей, хранящихся с помощью
+# PBKDF2SHA1, argon2, bcrypt
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.ScryptPasswordHasher',
+]
+# Список валидаторов пароля
+AUTH_PASSWORD_VALIDATORS = [
+    # Проверяет сходство парооля и атрибутов пользователя. Принимает user_attributes=DEFAULT_USER_ATTRIBUTES, max_similarity=0,7.
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    # Проверяет, соответствует ли пароль минимальной длине. Принимает min_length=8.
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 9,
+        }
+    },
+    # Проверяет, встречается ли пароль в списке общих паролей. Принимает password_list_path=DEFAULT_PASSWORD_LIST_PATH.
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    # Проверяет, является ли пароль числовым.
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # Включения функциональности сессий
+    # Управление сеансами по запросам
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    # Связывает пользователей с запросами, используя сеансы
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -170,22 +214,6 @@ class PrimaryReplicaRouter:
 Добавляем в настройки маршрутизаторы (порядок важен):
 DATABASE_ROUTERS = ["path.to.AuthRouter", "path.to.PrimaryReplicaRouter"]
 """
-
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
 
 
 LANGUAGE_CODE = 'en-us'

@@ -33,3 +33,15 @@ TODO:
 2. https://docs.djangoproject.com/en/4.2/topics/forms/modelforms/
 3. https://docs.djangoproject.com/en/4.2/topics/forms/media/
 """
+
+
+"""
+1. AdminPasswordChangeForm - форма в Admin для изменения пароля.
+2. AuthenticationForm - форма для входа пользователя.
+3. PasswordChangeForm - форма изменения пароля.
+4. PasswordResetForm - форма создания и отправки по эл. почте одноразовой ссылки для сброса пароля.
+5. SetPasswordForm - форма смены пароля, не вводя старый пароль.
+6. UserChangeForm - форма в Admin для изменения информации и разрешений пользователя.
+7. BaseUserCreationForm - базовая форма создания пользователя. 
+8. UserCreationForm - форма наследует BaseUserCreationForm и не допускает одинаковые имена пользователей с разными регистрами.
+"""
