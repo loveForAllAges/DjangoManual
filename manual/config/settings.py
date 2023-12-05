@@ -231,6 +231,10 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# Список идентификаторов сообщений, созданных системой проверки системы, 
+# которые будут игнорироваться.
+SILENCED_SYSTEM_CHECKS = []
+
 
 # Обработчики загрузки файлов по умолчанию: чтение небольших файлов в память и больших на диск.
 FILE_UPLOAD_HANDLERS = [

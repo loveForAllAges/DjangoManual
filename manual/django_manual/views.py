@@ -571,27 +571,6 @@ Someone asked for password reset for email {{ email }}. Follow the link below:
 """
 
 
-
-
-
-
-"""
-Раздел: Class-based views (представления на основе классов).
-
-
-Асинхронные представления
-"""
-
-
-class AsyncView(View):
-    async def get(self, request, *args, **kwargs):
-        await asyncio.sleep(10)
-        return HttpResponse('Hello async world!')
-    
-
-
-
-
 import logging
 
 

@@ -1,3 +1,8 @@
+from django.views import View
+from django.http import HttpResponse
+
+import asyncio
+
 
 """
 Раздел: Asynchronous (Асинхронность)
@@ -31,3 +36,9 @@ thread_sensitive - функция синхронизации будет выпо
 Если текущего цикла событий нет, новый цикл событий запускается специально для одного асинхронного вызова
 и снова закрывается после завершения. В любом случае асинхронная фукнция будет выполняться в другом потоке.
 """
+
+
+class AsyncView(View):
+    async def get(self, request, *args, **kwargs):
+        await asyncio.sleep(10)
+        return HttpResponse('Hello async world!')

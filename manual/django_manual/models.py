@@ -139,6 +139,7 @@ class TablespaceExample(models.Model):
 29. ForeignKey
 30. ManyToManyField
 31. OneToOneField
+32. GenetatedField
 
 1. AutoField(**options) - целочисленное поле, автоматически увеличиваемое с каждым новым обьектом. Используется как первичный ключ.
 2. BigAutoField(**options) - то же, что и AutoField, но для больших целых чисел (1 - 9223372036854775807).
@@ -171,6 +172,29 @@ class TablespaceExample(models.Model):
 29. ForeignKey(to_field, on_delete, **options) - поле для создания отошения многие к одному.
 30. ManyToManyField(to_field, **options) - поле для создания отношения многие ко многим.
 31. OneToOneField(to_field, on_delete, parent_link=False, **options) - поле для создания отношения один к одному.
+
+32. GenetatedField(
+    expression,         # Expression используется БД для автоматической установки значения поля при изменении модели. 
+                        # Выражения должны быть детерминированными и ссылаться только на поля внутри модели. 
+                        # Сгенерированные поля не могут ссылаться на другие сгенерированные поля.
+
+    output_field,       # Экземпляр поля модели для определения типа данных поля.
+
+    db_persist=None,    # Если False, то столбец действует как виртуальный и не занимает место в БД. Иначе как хранимый столбец.
+                        # PostgreSQL поддерживает только постоянные столбцы.
+
+    **kwargs
+)                       # Поле, которое вычисляется на основе других полей. Это поле управляется и обновляется самой БД (GENERATED ALWAYS sql syntax).
+
+Пример:
+
+class Square(models.Model):
+    side = models.IntegerField()
+    area = models.GeneratedField(
+        expression=F('side') * F('side'),
+        output_field=models.BigIntegerField(),
+        db_persist=True
+    )
 """
 
 
@@ -229,10 +253,28 @@ class TablespaceExample(models.Model):
 47. through_fields
 48. db_table
 49. parent_link
+50. db_default
 
 1. null - определяет значение NULL в DB.
 2. blank - определяет пустое поле в форме.
-3. choices - принимает список кортежей, чтобы задать список допустимых значений для поля.
+
+3. choices # Принимает сопоставления или вызываемый обьект для выбора.
+
+Пример:
+
+SPORT_CHOICES = {
+    "Martial Arts": {"judo": "Judo", "karate": "Karate"},
+    "Racket": {"badminton": "Badminton", "tennis": "Tennis"},
+    "unknown": "Unknown",
+}
+
+def get_scores():
+    return [(i, str(i)) for i in range(10)]
+
+class Winner(models.Model):
+    sport = models.CharField(choices=SPORT_CHOICES)
+    score = models.IntegerField(choices=get_scores) 
+
 4. db_column - принимает строку с именем столбца для DB.
 5. db_comment - принимает строку с комментарием к полю в DB.
 6. db_index - создает индекс для поля в DB для ускорения поиска. (TODO)
@@ -279,6 +321,15 @@ class TablespaceExample(models.Model):
 47. through_fields - определение полей промежуточной модели. Используется после through.
 48. db_table - имя таблицы для хранения данных типа многие ко многим.
 49. parent_link - следует ли поле использовать в качестве ссылки на родительский класс, а не как доп. поле.
+
+50. db_default # Значение по умолчанию, вычисленное БД.
+
+Пример:
+
+class MyModel(models.Model):
+    age = models.IntegerField(db_default=18)
+    created = models.DateTimeField(db_default=Now())
+    circumference = models.FloatField(db_default=2 * Pi())
 """
 
 
