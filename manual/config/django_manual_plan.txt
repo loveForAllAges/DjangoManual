@@ -17,7 +17,7 @@
 - 17. Security in Django
 - 18. Performance and optimization
 + 19. Serializing Django objects
-- 20. Django settings
++ 20. Django settings
 - 21. Signals
 + 22. System check framework
 + 23. External packages
