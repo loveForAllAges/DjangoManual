@@ -1,0 +1,89 @@
+# 12. Cryptographic signing (Криптографическая подпись).
+
+"Золотое правило безопасности веб-приложений - никогда не доверять данным из ненадежных источников"
+
+"""
+Криптографическая подпись можно использовать для:
+- Создания URL для сброса паролоя пользователя;
+- Обеспечения того, что данные, хранящиеся в скрытых полях формы, не были подделаны;
+- Создание одноразовых секретных URL для разрешения временного доступа к защищенному ресурсу, 
+например, файлу, за который пользователь заплатил.
+
+
+Signer(
+    *, 
+    key=None, # 
+    sep=':', # 
+    salt=None, # Заполняет хэш-функцию подписи сверху солью.
+    algorithm=None, # Алгоритм должен быть поддерживаемым hashlib. По умолчанию 'sha256'.
+    fallback_keys=None # Список доп. значений для проверки подписанных данных (SECRET_KEY_FALLBACKS).
+) -> # Возвращает подписывающую сторону, которая использует key для создания подписей и 
+     # sep для разделения значений.
+
+УСТАРЕЛО С v4.2.
+
+
+TimestampSigner(
+    *,
+    key=None,
+    salt=None, 
+    algorithm='sha256',
+
+) -> # Наследует Signer, добавляя к значению подписанную временную метку.
+.sign(value) # Подпись value и добавление временной метки.
+.unsign(value, max_age=None) # Проверяет, если value было подписано менее max_age секунд.
+                             # max_age - число или datetime.timedelta().
+.sign_object(obj, serializer=JSONSerializer, comperss=False) # Кодировать при необходимости сжимать, 
+                             # добавлять текущую метку времени и подписывать сложную структуру данных.
+.unsign_object(signed_obj, serializer=JSONSerializer, max_age=None) # Проверяет, 
+                             # если signed_obj было подписано менее max_age.
+
+УСТАРЕЛО С v4.2.
+
+
+dumps(
+    obj, 
+    key=None, 
+    salt='django.core.signing', 
+    serializer=JSONSerializer, 
+    compress=False
+)
+Возвращает URL-безопасную подписанную сжатую строку JSON в формате Base64. Сериализованный объект подписывается с помощью TimestampSigner.
+
+
+loads(string, 
+    key=None, 
+    salt='django.core.signing', 
+    serializer=JSONSerializer, 
+    max_age=None, 
+    fallback_keys=None
+)
+Обратное значение dumps(), повышается, BadSignatureесли подпись не удалась. Проверяет max_age(в секундах), если дано.
+
+                             
+# Использование низкоуровнего API (используется SECRET_KEY):
+>>> from django.core.signing import Signer
+>>> s = Signer()
+>>> v = s.sign('Strign is mine')
+>>> v
+'Strign is mine:mJwutq_cFDJ0_SBQkt_KN_QCSb5EQsBvChIBY8dnqqo'
+>>> o = s.unsign(v)
+>>> o
+'Strign is mine'
+>>> d = {'message': 'test message'}
+>>> v2 = s.sign_object(d)
+>>> v2
+'eyJtZXNzYWdlIjoidGVzdCBtZXNzYWdlIn0:1DofrcJF1kpDUIs4xHcr_mC2SXeCzj30FTZ9ZJa08N8'
+>>> o2 = s.unsign_object(v2)
+>>> o2
+{'message': 'test message'}
+>>> from django.core.signing import TimestampSigner
+>>> s = TimestampSigner()
+>>> v = s.sign('hello')
+>>> v
+'hello:1rAwsm:3F6UXYkundLQZX4veUy8joEz26l9hyUbYy7-Zwdg3O0'
+>>> s.unsign(v)
+'hello'
+>>> s.unsign(v, max_age=100)
+'hello'
+"""
