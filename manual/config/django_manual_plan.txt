@@ -18,7 +18,7 @@
 - 18. Performance and optimization
 + 19. Serializing Django objects
 + 20. Django settings
-- 21. Signals
++ 21. Signals
 + 22. System check framework
 + 23. External packages
 + 24. Asynchronous support
