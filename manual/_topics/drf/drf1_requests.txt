@@ -1,0 +1,35 @@
+1. Requests (Запросы)
+
+
+rest_framework.request.Request расширяет HttpRequest, добавляя поддержку 
+гибкого разбора запросов DRF и запросов аутентификации (Использование 
+различных политик аутентификации для разных частей API; Информация о 
+пользователе и токене запроса).
+
+- request.data:
+    Возвращает ВСЕ (request.POST, request.FILES) разобранное содержимое тела 
+    запроса. Поддерживает анализ содержимого HTTP-методов (PUT, PATCH, DELETE), 
+    поддерживает гибкий анализ запросов DRF, а не только данных формы.
+- request.query_params:
+    Синоним request.GET.
+- request.parsers:
+    Экземпляр Parser из parser_classes в представлении или 
+    DEFAULT_PARSER_CLASSES из настроек. Разбирает полученный запрос.
+- request.accepted_renderer:
+    Экземпляр рендерера, выбранный на этапе согласования содержимого.
+- request.accepted_media_type:
+    Строка, представляющая тип мультимедиа, выбранного на этапе согласования 
+    содержимого.
+- request.user:
+    Возвращает django.contrib.auth.models.User или AnonymousUser.
+- request.auth:
+    Возвращает доп. контекст аутентификации (Например, токен) или None.
+- request.authenticators:
+    Экземпляр Authentication из authentication_classes или 
+    DEFAULT_AUTHENTICATORS.
+- request.method:
+    Возвращает упрощенное строковое представление HTTP-метода запроса.
+- request.content_type:
+    Возвращает строковый обьект, представляющий тип медиа HTTP-запроса или ''. 
+- request.stream:
+    Возвращает поток, представляющий содержимое тела запроса.

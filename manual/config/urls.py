@@ -92,6 +92,7 @@ name='sports:polls:index'
 
 
 urlpatterns = [
+    path('api/', include('drf.urls')),
     path('', include('dja.urls')),
     path('admin/', admin.site.urls),
     path('test_session', post_comment),

@@ -10,34 +10,61 @@ TODO:
 - Изучить Async + сделать практическое задание
 - Резюмировать Django + сделать практическое задание
 - Документирование API
+- Единый вид ответов API.
 
 
-1. Models and databases
-2. Handling HTTP requests
-3. Working with forms
-4. Templates
-5. Class-based views
-6. Migrations
-7. Managing files
-8. Testing in Django
-9. User auth in Django
-10. Django's cache framework
-11. Conditional View Processing
-12. Cryptographic signing
-13. Sending email
-14. Internationalization and localization
-15. Logging
-16. Pagination
-17. Security in Django
-18. Performance and optimization
-19. Serializing Django objects
-20. Django settings
-21. Signals
-22. System check framework
-23. External packages
-24. Asynchronous support
+DJA (Django):
+- 1. Models and databases
+- 2. Handling HTTP requests
+- 3. Working with forms
+- 4. Templates (Шаблоны)
+- 5. Class-based views
+- 6. Migrations
+- 7. Managing files
+- 8. Testing in Django
+- 9. User auth in Django
+- 10. Django's cache framework
+- 11. Conditional View Processing
+- 12. Cryptographic signing
+- 13. Sending email
+- 14. Internationalization and localization
+- 15. Logging (Логирование)
+- 16. Pagination (Пагинация)
+- 17. Security in Django (Безопасность)
+- 18. Performance and optimization
+- 19. Serializing Django objects
+- 20. Django settings
+- 21. Signals (Сигналы)
+- 22. System check framework
+- 23. External packages
+- 24. Asynchronous support
 
 
-Доп:
-- 1. Applications
-- 2. ...
+DRF (Django REST Framework):
++ 1. Requests (Запросы)
++ 2. Responses (Ответы)
+- 3. Views, generic views, viewsets (Представления)
+- 4. Routers (Маршрутизаторы)
+- 5. Parsers (Парсеры)
+- 6. Renderers (Рендереры)
+- 7. Serializers, serializer fields, serializer relations (Сериализаторы)
+- 8. Validators (Валидаторы)
+- 9. Authentication (Аутентификация)
+- 10. Permissions (Ограничения)
+- 11. Caching (Кэширование)
+- 12. Throttling (Регулирование)
+- 13. Filtering (Фильтрация)
+- 14. Pagination (Пагинация)
+- 15. Versioning (Управление версиями)
+- 16. Content negotiation (Согласование содержания)
+- 17. Metadata (Метаданные)
+- 18. Schemas (Схемы)
+- 19. Format suffixes (Суффиксы формата)
+- 20. Returning URLs (Возврат URL)
++ 21. Status codes (Коды состояния)
+- 22. Testing (Тестирование)
+- 23. Settings (Настройки)
+
+
+DCF (Django Channels):
+...

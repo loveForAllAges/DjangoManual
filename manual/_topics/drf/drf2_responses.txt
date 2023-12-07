@@ -1,0 +1,31 @@
+2. Responses (Ответы)
+
+
+Response не создает обьекты со сформированным содержимым, а передает 
+несформированные данные, в отличие от HttpResponse. Необходимо сериализовать 
+данные в примитивные типы данных перед созданием обьекта Response.
+
+rest_framework.response.Response(
+    data, # Сериализованные данные.
+    status=None, # Код статуса для ответа. По умолчанию 200.
+    template_name=None, # Имя шаблона, если выбран HTMLRenderer.
+    headers=None, # Словарь HTTP-заголовков.
+    content_type=None, # Тип содержимого ответа. Устанавливается автоматически.
+)
+
+- Response.data:
+    Несформированные, сериализованные данные.
+- Response.status_code:
+    Цифровой код состояния HTTP-ответа.
+- Response.content:
+    Сформированное содержимое ответа. Сначала Response.render().
+- Response.template_name:
+    Файл шаблона.
+- Response.accepted_renderer:
+    Экземпляр рендерера для формирования ответа.
+- Response.accepted_media_type:
+    Тип медиа.
+- Response.renderer_context:
+    Словарь контекста.
+- Response.render():
+    Преобразовывает сериализованные данные в конечное содержимое ответа.

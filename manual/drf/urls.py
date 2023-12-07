@@ -41,12 +41,23 @@ PART 4 Viewset, ModelViewset
 #     path('', include(router.urls)),
 # ]
 
-router = DefaultRouter()
-router.register(r'tasks', TaskModelViewset, basename='task')
-router.register(r'track', TrackAPIView, basename='track')
-router.register(r'albums', AlbumAPIView, basename='album')
+# router = DefaultRouter()
+# router.register(r'tasks', TaskModelViewset, basename='task')
+# router.register(r'track', TrackAPIView, basename='track')
+# router.register(r'albums', AlbumAPIView, basename='album')
+
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('album', AlbumListAPI.as_view())
+    # path('', test),
+    # path('', include(router.urls)),
+    # path('album', AlbumListAPI.as_view())
 ]
+
+
+# from rest_framework.request import Request
+# from rest_framework.response import Response
