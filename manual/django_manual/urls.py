@@ -27,6 +27,9 @@ from django.views.decorators.cache import cache_page
 
 
 urlpatterns = [
+    path('blog/', blog_list, name='blog_list'),
+    # path('blog/', BlogListView.as_view(), name='blog_list'),
+    path('blog/create/', BlogCreateView.as_view()),
     path('cached_page/', cache_page(60 * 15)(cached_page)),
     path('log', logging_view),
     path('', TemplateView.as_view(template_name='index.html')),

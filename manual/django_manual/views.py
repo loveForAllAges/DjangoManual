@@ -595,3 +595,26 @@ from django.views.decorators.cache import cache_page
 def cached_page(request, *args, **kwargs):
     a = Author.objects.all()
     return HttpResponse(a)
+
+
+from .models import Blog
+from .forms import BlogForm
+
+
+class BlogCreateView(generic.CreateView):
+    model = Blog
+    form_class = BlogForm
+    template_name = 'form-view.html'
+    success_url = reverse_lazy('blog_list')
+
+
+"<script>console.log('OK')</script>"
+
+class BlogListView(generic.ListView):
+    model = Blog
+    template_name = 'object-list.html'
+
+
+def blog_list(request):
+    b = Blog.objects.all()
+    return HttpResponse([i.name + ' ' for i in b])

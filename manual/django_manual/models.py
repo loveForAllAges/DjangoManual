@@ -5,7 +5,7 @@ import datetime
 
 
 class Blog(models.Model):
-    name = models.CharField(max_length=32)
+    name = models.CharField(max_length=64)
 
 
 class Entry(models.Model):

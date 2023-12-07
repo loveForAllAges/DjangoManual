@@ -45,3 +45,12 @@ TODO:
 7. BaseUserCreationForm - базовая форма создания пользователя. 
 8. UserCreationForm - форма наследует BaseUserCreationForm и не допускает одинаковые имена пользователей с разными регистрами.
 """
+
+from django import forms
+from .models import Blog
+
+
+class BlogForm(forms.ModelForm):
+    class Meta:
+        model = Blog
+        fields = ('__all__')
