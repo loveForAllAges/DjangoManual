@@ -23,7 +23,11 @@ views_urlpatterns = [
 ]
 
 
+from django.views.decorators.cache import cache_page
+
+
 urlpatterns = [
+    path('cached_page/', cache_page(60 * 15)(cached_page)),
     path('log', logging_view),
     path('', TemplateView.as_view(template_name='index.html')),
     path('upload_file', upload_file),

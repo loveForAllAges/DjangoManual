@@ -580,3 +580,18 @@ logger = logging.getLogger('custom_logger')
 def logging_view(request):
     logger.info('Logging view')
     return HttpResponse('Logging view')
+
+
+
+
+
+# Другое
+
+
+from django.views.decorators.cache import cache_page
+
+
+# @cache_page(60 * 15)
+def cached_page(request, *args, **kwargs):
+    a = Author.objects.all()
+    return HttpResponse(a)
