@@ -2,9 +2,9 @@ from django.apps import AppConfig
 from django.core.signals import request_finished
 
 
-class DjangoManualConfig(AppConfig):
+class DJAConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'django_manual'
+    name = 'dja'
 
     def ready(self) -> None:
         # Подключение сигналов с декораторами

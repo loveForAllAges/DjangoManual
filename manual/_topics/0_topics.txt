@@ -1,3 +1,14 @@
+0. Оглавление.
+
+
+TODO Изучить JSON логирование + сделать практическое задание
+TODO Изучить DRF + сделать практическое задание
+TODO Изучить Django Filters + сделать практическое задание
+TODO Изучить CORS Headers + сделать практическое задание
+TODO Изучить Async + сделать практическое задание
+TODO Резюмировать Django + сделать практическое задание
+
+
 1. Models and databases
 2. Handling HTTP requests
 3. Working with forms
