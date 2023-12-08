@@ -51,7 +51,7 @@ DRF (Django REST Framework):
 - 8. Validators (Валидаторы)
 - 9. Authentication (Аутентификация)
 - 10. Permissions (Ограничения)
-- 11. Caching (Кэширование)
++ 11. Caching (Кэширование)
 - 12. Throttling (Регулирование)
 - 13. Filtering (Фильтрация)
 - 14. Pagination (Пагинация)

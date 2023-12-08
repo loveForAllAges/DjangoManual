@@ -1,0 +1,51 @@
+11. Caching (Кэширование)
+
+
+Кэширование DRF работает с кэшированием Django. Django представляет 
+method_decorator для использования декораторов с представлениями, основанными 
+на классах. Его можно использовать с другими декораторами кэша (cache_page, 
+vary_on_cookie, vary_on_headers). cache_page кэширует только GET и HEAD ответы 
+со статусом 200.
+
+```python
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie, vary_on_headers
+
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import viewsets
+
+
+class UserViewSet(viewsets.ViewSet):
+    # Кэширует URL для каждого пользователя на 2 часа.
+    @method_decorator(cache_page(60 * 60 * 2))
+    @method_decorator(vary_on_cookie)
+    def list(self, request, format=None):
+        content = {
+            'user_feed': request.user.get_user_feed(),
+        }
+        return Response(content)
+
+
+class ProfileView(APIView):
+    # С аутентификацией: кэширует URL для каждого пользователя на 2 часа.
+    @method_decorator(cache_page(60 * 60 * 2))
+    @method_decorator(vary_on_headers('Authorization'))
+    def get(self, request, format=None):
+        content = {
+            'user_feed': request.user.get_user_feed(),
+        }
+        return Response(content)
+
+
+class PostView(APIView):
+    # Кэширует страницу URL
+    @method_decorator(cache_page(60 * 60 * 2))
+    def get(self, request, format=None):
+        content = {
+            'title': 'Post title',
+            'body': 'Post body',
+        }
+        return Response(content)
+```
