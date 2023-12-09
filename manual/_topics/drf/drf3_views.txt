@@ -1,0 +1,58 @@
+3. Views, generic views, viewsets (Представления)
+
+
+Примеры находятся в drf.views.
+
+
+Отличия APIView от View:
+- Запросы, передаваемые методам обработчика, будут Request, а не HttpRequest.
+- Методы обработчика могут возвращать Response, а не HttpResponse.
+- Любые исключения APIException будут обработаны в ответы.
+- Входящие запросы будут аутентифицированы и перед отправкой запроса, метод-
+обработчик будет выполнять проверки разрешений и дросслеирования.
+
+
+Атрибуты:
+- renderer_classes
+- parser_classes
+- authentication_classes
+- throttle_classes
+- permission_classes
+- content_negotiation_class
+Методы:
+- get_renderers(self)
+- get_parsers(self)
+- get_authenticators(self)
+- get_content_negotiator(self)
+- get_exception_handler(self)
+Методы, вызываемые перед отправкой в метод обработчика:
+- check_permissions(self, request)
+- check_throttles(self, request)
+- perform_content_negotiation(self, request, force=False)
+Методы, вызываемые dispatch() (Действия до или после вызова get, post и т.д.):
+- initial(self, request, *args, **kwargs)
+    Выполняет действия, которые должны произойти до вызова метода обработчика. 
+    Используется для обеспечения разрешений, дросселирования и согласования.
+- handle_exception(self, exc)
+    Обрабатывает исключения, вызванные методом обработчика.
+- initialize_request(self, request, *args, **kwargs)
+    Возвращает Request.
+- finalize_response(self, request, response, *args, **kwargs)
+    Возвращает Response с согласованным типом содержимого.
+
+
+1. GenericAPIView
+2. ListModelMixin
+3. CreateModelMixin
+4. RetrieveModelMixin
+5. UpdateModelMixin
+6. DestroyModelMixin
+7. CreateAPIView
+8. ListAPIView
+9. RetrieveAPIView
+10. DestroyAPIView
+11. UpdateAPIView
+12. ListCreateAPIView
+13. RetrieveUpdateAPIView
+14. RetrieveDestroyAPIView
+15. RetrieveUpdateDestoryAPIView

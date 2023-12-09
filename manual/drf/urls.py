@@ -53,6 +53,10 @@ from rest_framework import status
 
 
 urlpatterns = [
+    path('views/', ListUsers.as_view()),
+    path('api_view/', api_view_func),
+    path('ListCreateAPIView/', UserList2.as_view()),
+
     # path('', test),
     # path('', include(router.urls)),
     # path('album', AlbumListAPI.as_view())

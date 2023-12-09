@@ -1,0 +1,49 @@
+5. Parsers (Парсеры)
+
+
+Парсеры принимают запросы от различных типов мультимедиа. Набор парсеров для 
+представления определеяется как список классов. При обращении к request.data 
+проверяется заголовок Content-Type запроса и определяется парсер. По умолчанию 
+'application/x-www-form-urlencoded'. Например, если идет отправка json данных с 
+помощью JQuery .ajax(), обязательно включить заголовок contentType: 
+'application/json'.
+
+- JSONParser:
+    Анализирует JSON запроса. request.data будет заполнен словарем данных.
+    media_type: 'application/json'.
+- FormParser:
+    Анализирует содержимое HTML формы. request.data будет заполнен QueryDict. 
+    Рекомендуется использовать вместе с MultiPartParser. media_type: 
+    'application/x-www-form-urlencoded'.
+- MultiPartParser:
+    Анализирует содержимое HTML формы, которое поддерживает загрузку файлов. 
+    request.data и request.FILES будут заполнены QueryDict и MultiValueDict. 
+    Рекомендуется с использовать вместе с FormParser. media_type: 
+    'multipart/form-data'.
+- FileUploadParser:
+    Анализирует загруженный файл. request.data будет словарь с ключом 'file'. 
+    В URL представения есть агрумент filename, то  он будет использоваться в 
+    качестве имени файла, иначе необходимо установить имя файла в 
+    Content-Disposition заголовке. media_type: '*/*'. Предназначен для 
+    использования с собственными клиентами. Учитывает настройку 
+    FILE_UPLOAD_HANDLERS и атрибут request.upload_handlers.
+
+Для реализации кастомного парсера необходимо переопределить BaseParser, 
+установив св-во media_type и реализовав метод parse(), который должен 
+возвращать данные для заполнения request.data.
+
+parse(
+    stream, # Тело запроса.
+    media_type. # Тип носителя содержимого входящего запроса.
+    parser_content, # Словарь, содержащий доп. контекст для разбора запроса. По 
+    умолчанию view, request, args, kwargs.
+)
+
+Пример:
+```python
+class PlainTextParser(BaseParser):
+    media_type = 'text/plain'
+    
+    def parse(self, stream, media_type=None, parser_context=None):
+        return stream.read()
+```

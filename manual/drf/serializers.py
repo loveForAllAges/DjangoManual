@@ -2,6 +2,14 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from .models import Task, Subtask, Album, Track
+from django.contrib.auth.models import User
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+
 
 
 """
@@ -312,12 +320,12 @@ from rest_framework import serializers
 from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
 
-from .models import Women
+# from .models import Women
 
 
-class WomenSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+# class WomenSerializer(serializers.ModelSerializer):
+#     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
-    class Meta:
-        model = Women
-        fields = "__all__"
+#     class Meta:
+#         model = Women
+#         fields = "__all__"
