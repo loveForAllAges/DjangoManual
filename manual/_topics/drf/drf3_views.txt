@@ -42,17 +42,83 @@
 
 
 1. GenericAPIView
+        Расширяет APIView. Каждое из представлений создается путем обьединения 
+        GenericAPIView с одним или несколькими миксинами.
+        - queryset
+        - serializer_class
+        - lookup_field
+            Поле модели, которое должно использоваться для выполнения поиска 
+            обьектов в отдельных экземплярах модели. По умолчанию 'pk'.
+        - lookup_url_kwarg
+            Аргумент URL, который должен использоваться для поиска обьекта. 
+            URLconf должен включать именованный аргумент, соответствующий этому 
+            значению. По умолчанию lookup_field.
+        - pagination_class
+        - filter_backends
+        - get_queryset(self)
+        - get_object(self)
+            Возвращает экземпляр обьекта для детальных представлений. По 
+            умолчанию lookup_field для фильтрации базового набора запросов.
+        - filter_queryset(self, queryset)
+            Получает набор запросов и фильтрует с помощью filter_backends.
+        - get_serializer_class(self)
+        - get_serializer_context(self)
+            Возвращает словарь, содержащий доп. контекст для сериализатора. По 
+            умолчанию request, view, format.
+        - get_serializer(self, instance=None, data=None, many=False, 
+        partial=False)
+            Возвращает Response в стиле paginated.
+        - paginate_queryset(self, queryset)
+            Пагинация набора запросов. Возвращает обьект страницы или None.
+        - filter_queryset(self, queryset)
+            Фильтрует набор запросов с помощью filter_backends.
+        - perform_create(self, serializer)
+        - perform_update(self, serializer)
+            Делает все поля необязательными.
+        - perform_destroy(self, serializer)
 2. ListModelMixin
+    Реализует вывод набора запроса.
 3. CreateModelMixin
+    Реализует создание и сохранение экземпляра модели. Если представление 
+    содержит ключ с именем url, то заголовок Location будет иметь это значение.
 4. RetrieveModelMixin
+    Реализует возврат существующего экземпляра модели.
 5. UpdateModelMixin
+    Реализует обновление и сохранение экземпляра модели. Поддерживает PATCH.
 6. DestroyModelMixin
+    Реализует удаление существующего экземпляра модели.
 7. CreateAPIView
+    Используется для создания конечных точек.
 8. ListAPIView
+    Используется для конечных точек для чтения.
 9. RetrieveAPIView
+    Используется для конечных точек только для чтения одного экземпляра.
 10. DestroyAPIView
+    Используется для удаления конечных точек для одного экземпляра.
 11. UpdateAPIView
+    Используется для обновления конечных точек одной модели.
 12. ListCreateAPIView
 13. RetrieveUpdateAPIView
 14. RetrieveDestroyAPIView
 15. RetrieveUpdateDestoryAPIView
+16. ViewSet
+    Не предоставляет никаких действий реализации.
+    - basename
+        Основа создаваемых имен URL.
+    - action
+        Имя текущего действия (list, create, ...).
+    - detail
+        Настроено ли текущее действие на просмотр деталей.
+    - suffix
+        Суффикс отображения для типа набора представлений.
+    - name
+        Имя набора представлений. Взаимоисключает suffix.
+    - description
+        Описание для отдельного вида набора представлений.
+17. ModelViewSet
+    Включает реализацию различных действий, смешивая поведение миксинов.
+18. ViewSetMixin
+19. GenericViewSet
+    Не включает никаких действий по умолчанию.
+20. ReadOnlyModelViewSet
+    То же что и ModelViewSet, но только для чтения.

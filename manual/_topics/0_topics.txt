@@ -40,7 +40,7 @@ DJA (Django):
 DRF (Django REST Framework):
 + 1. Requests (Запросы)
 + 2. Responses (Ответы)
-- 3. Views, generic views, viewsets (Представления)
++ 3. Views, generic views, viewsets (Представления)
 - 4. Routers (Маршрутизаторы)
 + 5. Parsers (Парсеры)
 - 6. Renderers (Рендереры)
