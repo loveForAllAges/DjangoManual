@@ -1,0 +1,68 @@
+24. Exceptions (Исключения)
+
+
+Обрабатываемые исключения DRF:
+- Подклассы APIException внутри DRF;
+- Исключение Django Http404;
+- Исключение Django PermissionDenied.
+
+Ошибки валидации обрабатываются иначе. 
+
+Если фукнция обработки ошибок возвращает None, то исключение будет вызвано 
+повторно и вернет ответ HTTP 500 'Server error'.
+
+
+Пользовательская обработка исключений:
+1. Обработчик исключений см. drf.exeptions.
+2. Обновление настройки EXCEPTION_HANDLER.
+
+
+Обработчик исключений вызывается только для ответов, сгенерированных поднятыми 
+исключениями. Он не будет использоваться, например, для HTTP_400_BAD_REQUEST.
+
+
+APIException
+    Базовый класс всех исключений, возникающих внутри APIView или @api_view.
+    Чтобы предоставить пользовательское исключение, необходимо добавить в класс 
+    APIException атрибуты status_code, default_detail, default_code (см пример).
+ParseError(detail=None, code=None)
+    Возникает при содержании в запросе неправильно сформированные данные при 
+    доступе к request.data. По умолчанию приводит к HTTP '400 Bad Request'.
+AuthenticationFailed(detail=None, code=None)
+    Возникает, когда входящий запрос содержит неправильную аутентификацию. 
+    По умолчанию  приводит к ответу с кодом HTTP '401 Unauthenticated' или 
+    '403 Forbidden'.
+NotAuthenticated(detail=None, code=None)
+    Возникает, когда неаутентифицированный запрос не прошел проверку на 
+    разрешение. По умолчанию приводит к ответу HTTP '401 Unauthenticated' или 
+    '403 Forbidden'.
+PermissionDenied(detail=None, code=None)
+    Возникает, когда аутентифицированный запрос не прошел проверку на 
+    разрешение. По умолчанию приводит к ответу HTTP '404 Not Found'.
+NotFound(detail=None, code=None)
+    Возникает, когда ресурс не существует по указанному URL. По умолчанию 
+    приводит к ответу HTTP '404 Not Found'.
+MethodNotAllowed(method, detail=None, code=None)
+    Возникает, когда происходит входящий запрос, который не сопоставлен с 
+    методом-обработчиком на представление. По умолчанию приводит к ответу HTTP 
+    '405 Method Not Allowed'.
+NotAcceptable(detail=None, code=None)
+    Возникает, когда поступает запрос с заголовком Accept, который не может 
+    быть удовлетворен ни одним из доступных рендереров. По умолчанию приводит 
+    к ответу HTTP '406 Not Acceptable'.
+UnsupportedMediaType(media_type, detail=None, code=None)
+    Возникает, если при обращении к request.data нет парсеров, способных 
+    обработать тип содержимого данных запроса. По умолчанию приводит к ответу 
+    HTTP '415 Unsupported Media Type'.
+Throttled(wait=None, detail=None, code=None)
+    Возникает, когда входящий запрос не проходит проверку на дросселирование. 
+    По умолчанию приводит к HTTP '429 Too Many Requests'.
+ValidationError(detail=None, code=None)
+    Возникает, когда сериализатор экземпляра модели не проходит валидацию. По 
+    умолчанию приводит к HTTP '400 Bad Requests'.
+
+DRF предоставляет два представления ошибок:
+- rest_framework.exceptions.server_error
+    Возвращает ответ с кодом состояния 500 и типом содержимого application/json.
+- rest_framework.exceptions.bad_request
+    Возвращает ответ с кодом состояния 400 и типом содержимого application/json.

@@ -1,60 +1,38 @@
-"""
-rest_framework.pagination
+from rest_framework.pagination import (
+    PageNumberPagination, LimitOffsetPagination, CursorPagination,
+    BasePagination
+)
+from rest_framework.response import Response
 
 
+class LargeResultsSetPagination(PageNumberPagination):
+    page_size = 100
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
 
-PageNumberPagination()
-Этот стиль пагинации принимает номер страницы с одним номером в параметрах запроса
-
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination,
-    'PAGE_SIZE': 100
-}
-
-Атрибуты:
-django_paginator_class: Класс Django Paginator, который будет использоваться. По умолчанию django.core.paginator.Paginator
-page_size: числовое значение, указывающее размер страницы. По умолчанию PAGE_SIZE из настроек REST_FRAMEWORK
-page_query_param: строковое значение, указывающее имя параметра запроса, который будет использоваться для управления пагинацией
-page_size_query_param: строковое значение, указывающее имя параметра запроса, который позволяет клиенту устанавливать размер страницы на основе каждого запроса.
-max_page_size: числовое значение, указывающее на максимально допустимыйразмер запрашиваемой страницы. Действителен если установлен page_size_query_param
-last_page_strings: список или кортеж строковых значений, указывающих на значения, которые могут быть испрользованы с page_query_param для запроса последней страницы в наборе. По умолчанию ('last',)
-template: имя шаблона для использования при отображении элементов управления пагинацией в просматриваемом API.
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 
-
-LimitOffsetPagination()
-Этот стиль пагинации повторяет синтаксис, используемый при поиске нескольких записей в базе данных. Клиент включает в себя 'limit' и 'offset'. Лимит указывает на максимальное количество возвращаемых элементов и эквивалентен page_size в других стилях.
-
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination,
-    'PAGE_SIZE': 100
-}
-
-Атрибуты:
-default_limit: числовое значение, указывающее предел, который следует использовать если он не указан клиентом в параметре запроса. По умолчанию PAGE_SIZE
-limit_query_param: строковое значение, указывающее имя параметра запроса 'limit'. По умолчанию 'limit'
-offset_query_param: строковое значение, указывающее имя параметра запроса 'offset'. По умолчанию 'offset'
-max_limit: числовое значение, указывающее на максимально допустимый лимит, который может быть запрошен клиентом. По умолчанию None
-template: имя шаблона, который будет использоваться при отображении элементов управления пагинацией в просматриваемом API.
+class CustomLimitOffsetPagination(LimitOffsetPagination):
+    default_limit = 10
+    max_limit = 10
 
 
-
-CursorPagination()
-Этот стиль пагинации представляет только элементы управления перемоткой вперед и назад и не позволяет клиенту переходить к произвольным позициям.
-Пагинация требует наличия уникального, неизменного порядка следования элементов в наборе результатов. Обычно это временная метка создания записей, так как она представляет собой последовательный порядок для постраничного просмотра.
-
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
-    'PAGE_SIZE': 100
-}
-
-Атрибуты:
-page_size: числовое значение, указывающее размер страницы. По умолчанию PAGE_SIZE из настроек REST_FRAMEWORK
-cursor_query_param: строковое значение, указывающее имя параметра запроса 'cursor'. По умолчанию 'cursor'
-ordering: строка или список строк, указывающих на поле, к которому будет применяться пагинация на основе курсора. Наример, ordering='slug'. По умолчанию 'created'
-template: имя шаблона, который будет использоваться при отображении элементов управления пагинацией в просматриваемом API.
+class CustomCursorPagination(CursorPagination):
+    page_size = 10
+    ordering = '-id'
 
 
-"""
-
-# from rest_framework.pagination import 
+class CustomPagination(PageNumberPagination):
+    def get_paginated_response(self, data):
+        return Response({
+            'links': {
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link()
+            },
+            'count': self.page.paginator.count,
+            'results': data
+        })

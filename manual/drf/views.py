@@ -1,18 +1,23 @@
 from rest_framework import (
-    views, mixins, generics, authentication, permissions, viewsets
+    views, mixins, generics, authentication, permissions, viewsets, renderers,
 )
 from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
 from rest_framework.schemas import AutoSchema
 from rest_framework.decorators import (
     api_view, throttle_classes, authentication_classes, permission_classes,
-    schema, action
+    schema, action, renderer_classes
 )
 
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 
-from .serializers import UserSerializer
+from .serializers import UserSerializer, PostSerializer
+from .models import Post
+from .pagination import (
+    StandardResultsSetPagination, CustomLimitOffsetPagination, 
+    CustomCursorPagination, CustomPagination
+)
 
 
 class ListUsers(views.APIView):
@@ -82,6 +87,28 @@ class UserModelViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticatedOrReadOnly])
     def new_method(self, request):
         return Response({'content': 'test'})
+
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    renderer_classes = [renderers.TemplateHTMLRenderer]
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return Response({'object': self.object}, template_name='object.html')
+
+
+@api_view(['GET'])
+@renderer_classes([renderers.StaticHTMLRenderer])
+def simple_html_view(request):
+    data = '<h1>HEADER</h1>'
+    return Response(data)
+
+
+class PostListAPIView(generics.ListAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    pagination_class = CustomPagination
 
 
 

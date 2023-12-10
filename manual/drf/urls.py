@@ -16,4 +16,7 @@ urlpatterns = [
     path('api_view/', api_view_func),
     path('ListCreateAPIView/', UserList2.as_view()),
     path('ViewSet/', include(router.urls)),
+    path('htmlrenderer/<int:pk>/', UserDetail.as_view()),
+    path('statichtmlrenderer/', simple_html_view),
+    path('posts', PostListAPIView.as_view()),
 ]

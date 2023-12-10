@@ -602,7 +602,7 @@ TEMPLATES = [
         # путь к классу шаблонов, реализующий API шаблонов Django.
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # Список каталогов, в которых движок должен искать исходные файлы шаблонов в порядке поиска.
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         # Должен ли движок искать шаблоны внутри установленных приложений.
         'APP_DIRS': True,
         # Настройки для серверной части.
@@ -1072,7 +1072,8 @@ REST_FRAMEWORK = {
     'HTML_SELECT_CUTOFF_TEXT': 'More than {count} items...',
 
     # Строка, представляющая функцию, для возврата ответа для исключения.
-    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
+    # 'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
+    'EXCEPTION_HANDLER': 'drf.exceptions.custom_exception_handler',
 
     # Строка, представляющая ключ, для ошибок сериализатора без полей.
     'NON_FIELD_ERRORS_KEY': 'non_field_errors',

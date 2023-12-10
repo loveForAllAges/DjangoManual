@@ -1,0 +1,11 @@
+20. Returning URLs (Возврат URL)
+
+
+Лучше возвращать абсолютные URI (http://ex.com/foo), а не относительные (/foo).
+
+reverse(viewname, *args, **kwargs)
+    Имеет такое же поведение как django.urls.reverse, но возвращает полный URL.
+    Пример: reverse('foo', args=[1], request=request).
+reverse_lazy(viewname, *args, **kwargs)
+    Имеет такое же поведение как django.urls.reverse_lazy, но возвращает полный 
+    URL. Пример: reverse_lazy('foo', request=request)

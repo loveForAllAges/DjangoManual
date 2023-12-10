@@ -1,6 +1,13 @@
 from django.db import models
 
 
+class Post(models.Model):
+    body = models.CharField(max_length=128)
+
+    def __str__(self) -> str:
+        return self.body[:10]
+
+
 class Task(models.Model):
     title = models.CharField(max_length=4)
     body = models.TextField()

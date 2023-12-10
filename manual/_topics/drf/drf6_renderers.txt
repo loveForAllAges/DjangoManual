@@ -1,0 +1,57 @@
+6. Renderers (Рендереры)
+
+
+Рендеринг - процесс превращения промежуточного представления шаблона в конечный 
+поток байтов для передачи клиенту.
+
+JSONRenderer
+    Рендерит данные запроса в JSON, используя utf-8. Стиль кодировки JSON 
+    может быть изменен с помощью UNICODE_JSON, COMPACT_JSON.
+    media_type: 'application/json'; format: 'json'; charset: None.
+TemplateHTMLRenderer
+    Рендерит данные в HTML, используя стандартный рендеринг Django. В отличие 
+    от других рендереров, данные не нужно сериализовать (см drf.views).
+    media_type: 'text/html'; format: 'html'; charset: 'utf-8'.
+StaticHTMLRenderer
+    Простой рендерер, рендерит HTML. В отличие от других рендереров, данные 
+    должны быть строкой содержимого (см drf.views).
+    media_type: 'text/html'; format: 'html'; charset: 'utf-8'.
+BrowsableAPIRenderer
+    Рендерит данные в HTML для Browsable API. Определяет какой другой рендерер 
+    имел бы наивысший приоритет, и использует его для отображения ответа в 
+    стиле API на HTML-странице.
+    media_type: 'text/html'; format: 'api'; charset: 'utf-8'; template: 
+    'rest_framework/api.html'.
+AdminRenderer
+    Рендерит данные в HTML для отображения в стиле администратора. Подходит для 
+    веб-интерфейсов в стиле CRUD, которые должны представлять удобный интерфейс 
+    для управления данными.
+    media_type: 'text/html'; format: 'admin'; charset: 'utf-8'; template: 
+    'rest_framework/admin.html'.
+HTMLFormRenderer
+    Рендерит данные, возвращаемые сериализатором, в форму HTML. Вывод рендерера 
+    не включает заключающие теги <form>, CSRF-вход, кнопки. Используется в 
+    шаблонах, передавая экземпляр сериализатора в тег шаблона render_form.
+    media_type: 'text/html'; format: 'format'; charset: 'utf-8'; template: 
+    'rest_framework/horizontal/form.html'.
+MultiPartRenderer
+    Рендерит данные многочастной формы HTML. Не подходит для рендеринга 
+    ответов, а используется для создания тестовых запросов.
+    media_type: 'multipart/form-data;border=BoUnDaRySrRiNg'; format: 
+    'multipart'; charset: 'utf-8'.
+
+
+Реализация пользовательского рендерера (см. drf.renderers).
+
+Необходимо наследоваться от BaseRenderer, установить св-ва media_type, format и 
+реализовать метод render(self, data, accepted_media_type=None, 
+renderer_context=None), который должен возвращать строку байт для тела ответа.
+Аргументы render():
+    - data - данные запроса Response.
+    - accepted_media_type - тип медиа. Например, 'application/json;nested=true'.
+    - renderer_context - словарь контекстной информации. По умолчанию view, 
+    request, response, args, kwargs.
+
+Если рендерер возвращает строку байт, представляющую необработанное двоичное 
+содержимое, следует установить charset=None, что обеспечит отсутствие charset в 
+Content-Type.

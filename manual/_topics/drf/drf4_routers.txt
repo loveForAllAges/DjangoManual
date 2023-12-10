@@ -1,0 +1,29 @@
+4. Routers (Маршрутизаторы)
+
+
+Аргументы register():
+- prefix
+    Префикс URL для набора маршрутов.
+- viewset
+    Класс набора представлений.
+- basename
+    Основа создаваемых имен URL. По умолчанию имя атрибута queryset. 
+
+Маршрутизатор будет сопоставлять значения поиска. Чтобы изменить шаблон поиска, 
+lookup_value_regex для набора представлений или lookup_value_converter. Пример:
+```python
+class MyModelViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    lookup_field = 'my_model_id'
+    lookup_value_regex = '[0-9a-f]{32}'
+```
+
+Атрибуты роутеров:
+- trailing_slash
+    Дополнять ли URL косой чертой.
+- use_regex_path
+    Использовать ли регулярные выражения. Иначе используются преобразователи 
+    путей.
+
+SimpleRouter
+DefaultRouter
+    Похож на SimpleRouter, но включает корневое представление API.
