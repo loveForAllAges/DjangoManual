@@ -1,0 +1,36 @@
+13. Filtering (Фильтрация)
+
+
+Типы фильтрации:
+- Фильтрация по текущему пользователю
+- Фильтрация по URL
+- Фильтрация по параметрам запроса
+
+DjangoFilterBackend
+    Поддерживает высоконастраиваемую фильрацию полей. Настройка:
+    1. pip install django-filter
+    2. INSTALLED_APPS = ['django_filters', ...]
+    3. Добавить DEFAULT_FILTER_BACKENDS или fiter_backends.
+    4. Добавить filterset_fields.
+SearchFilter
+    Поддерживает простой поиск по одному параметру запроса. Настройка:
+    1. Добавить filter_backends.
+    2. Добавить search_fields.
+    Префиксы имен полей (Например: search_fields = ['=username']):
+    1. ^ - istartswith (начинается с поиска)
+    2. = - iexact (точные совпадения)
+    3. $ - iregex (regex-поиск)
+    4. @ - search (полнотектовый поиск)
+    SEARCH_PARAM - имя параметра поиска. По умолчанию 'search'.
+OrderingFilter
+    Поддерживает сортировку, управляемую параметрами запроса. Настройка:
+    1. Добавить filter_backends.
+    2. Добавить ordering_fields.
+    3. Добавить ordering - порядок по умолчанию.
+    Для сортировки по убыванию необходимо добавить префикс '-' к именам полей.
+    ORDERING_PARAM - имя параметра поиска. По умолчанию 'ordering'.
+
+
+Пользовательские фильтры
+Необходимо переопределить BaseFilterBackend и метод filter_queryset(self, 
+request, queryset, view).

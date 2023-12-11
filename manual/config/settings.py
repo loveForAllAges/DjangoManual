@@ -361,6 +361,7 @@ IGNORABLE_404_URLS = []
 # Список строк путей к классу конфигурации приложения или пакета с приложением.
 # По умолчанию [].
 INSTALLED_APPS = [
+    'django_filters',
     'django.contrib.admin',
     # Ядро структуры аутентификации и ее модели по умолчанию. Создание разрешений по умолчанию (CRUD) для каждой модели.
     'django.contrib.auth',
@@ -948,6 +949,9 @@ REST_FRAMEWORK = {
     # Список дросселей, проверяемых при запуске представления.
     'DEFAULT_THROTTLE_CLASSES': [],
 
+    # Периоды тротлинга.
+    'DEFAULT_THROTTLE_RATES': {},
+
     # Класс согласования содержимого для выбора рендерера для ответа, учитывая 
     # входящий запрос.
     'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'rest_framework.negotiation.DefaultContentNegotiation',
@@ -957,6 +961,7 @@ REST_FRAMEWORK = {
 
     # Список классов фильтров для фильтрации.
     'DEFAULT_FILTER_BACKENDS': [],
+    # 'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 
     # Класс для пагинации наборов зарпосов.
     'DEFAULT_PAGINATION_CLASS': None,

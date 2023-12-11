@@ -1,0 +1,347 @@
+7. Serializers, serializer fields, serializer relations (Сериализаторы)
+
+
+Сериализаторы обрабатывают наборы запросов и экземпляры моделей в собственные 
+типы данных, которые могут быть преобразованы в JSON, XML и тд, а также обратно.
+
+Чтобы задать пользовательскую валидацию полей, необходимо добавить методы 
+validate_<имя поля>. Принимает значение поля. Возвращает проверенное значение 
+или ValidationError.
+
+Чтобы выполнить любую другую проверку, требующую доступа к нескольким полям, 
+необходимо добавить метод validate(). Принимает словарь значений полей. 
+Возвращает проверенные значения или ValidationError.
+
+Частичные обновления:
+Serializer(model, data={'content': 'foo'}, partial=True)
+
+Сохранять связанные экземпляры можно как в методах create(), update() 
+сериализатора, так и в менеджере модели.
+
+
+ModelSerializer
+    Сериализатор, который автоматически создает поля на основе модели. 
+    Автоматически генерирует валидаторы для сериализатора (unique_together).
+    Включает create(), update(). Любые отношения будут отображены как 
+    PrimaryKeyRelatedField. Для выбора используемых полей модели fields или 
+    exclude. Чтобы регулировать глубину отношений вложенных полей, необходимо 
+    использовать depth - целое число. read_only_fields - опция Meta, 
+    принимающая список имен полей доступных только для чтения. extra_kwargs - 
+    опция Meta, принимающая словарь имен доп. полей.
+    serializer_field_mapping
+        Отображение полей модели на поля сериализатора.
+    serializer_related_field
+        Класс поля сериализатора по умолчанию для реляционных полей. По 
+        умолчанию для ModelSerializer - serializers.PrimaryKeyRelatedField, 
+        для HyperLinkedModelSerializer - serializers.HyperlinkedRelatedField.
+    serializer_url_field
+        Класс поля сериализатора для любого поля url сериализатора. По 
+        умолчанию serializers.HyperlinkedIdentityField.
+    serializer_choice_field
+        Класс поля сериализатора для любых полей выбора в сериализаторе. По 
+        умолчанию serializers.ChoiceField.
+    build_standard_field(self, field_name, model_field)
+        Вызывается для генерации поля сериализатора, которое сопоставляется со 
+        стандартным полем модели. По умолчанию возвращает 
+        serializer_field_mapping.
+    build_relational_field(self, field_name, relation_info)
+        Вызывается для генерации поля сериализатора, которое сопоставляется с 
+        полем модели. По умолчанию возращает класс на основе 
+        serializer_related_field. relation_info - именованный кортеж с 
+        model_info, related_model, to_many, has_through_model.
+    build_nested_field(self, field_name, relation_info, nested_depth)
+        Вызывается для генерации поля сериализатора, которое сопоставляется с 
+        полем реляционной модели, если установлен depth. По умолчанию создает 
+        вложенный класс на основе ModelSerializer или 
+        HyperlinkedModelSerializer. Значение nested_depth = depth - 1.
+    build_property_field(self, field_name, model_class)
+        Вызывается для генерации полей сериализатора, которое сопоставляется со 
+        св-вом или методом с нулевым аргументом класса модели. По умолчанию 
+        возвращает ReadOnlyField.
+    build_url_field(self, field_name. model_class)
+        Вызывается для генерации поля сериализатора для собственного поля 
+        сериализатора url. По умолчаниюю возвращает HyperlinkedIdentityField.
+    build_unknown_field(self, field_name, model_class)
+        Вызывается, когда имя поля не сопоставлено ни с одним полем модели или 
+        св-вом модели. По умолчанию вызывает ошибку.
+HyperlinkedModelSerializer
+    Похож на ModelSerializer, но использует гиперссылки для представления 
+    отношений, а не первичные ключи. По умолчанию включает поле url вместо поля 
+    первичного ключа. Необходимо включить request в сериализатор для полного 
+    URL. Также необходимо определить представления для гиперссылок (По 
+    умолчанию '{имя модели}-detail' и ищет экземпляр по именованному аргументу 
+    pk). Переопределить имя представления поля URL и поле поиска: view_name, 
+    lookup_field в extra_kwargs или в поле сериализатора. Имя поля URL по 
+    умолчанию 'url' из URL_FIELD_NAME.
+ListSerializer
+    Обеспечивает поведение для сериализаци и валидации нескольких обьектов 
+    одновременно. Обычно используется many=True, а не явное использование 
+    ListSerializer. При передаче many=True создается ListSerializer. Аргументы, 
+    которые могут быть переданы:
+    allow_empty
+        Пустые списки в качестве допустимого ввода. По умолчанию True.
+    max_length
+        Макс. кол-во элементов в списке. По умолчанию None.
+    min_length
+        Мин. кол-во элементов в списке. По умолчанию None.
+BaseSerializer
+    Используется для простой поддержки альтернативных стилей сериализации и 
+    десериализации. Реализует тот же API, что и Serializer. Переопределяемые 
+    методы:
+    to_representation()
+        Метод сериализации, операций чтения. Принимает экземпляр обьекта, 
+        который требует сериализации и должен вернуть примитивное представление.
+    to_internal_value()
+        Метод десериализации, операций записи. Принимает невалидированные 
+        входящие данные в качестве входных и должен вернуть валидированные 
+        данные. Возвращаемое значение будет передано в create(), update(), если 
+        будет вызван save().
+    create(), update()
+        Методы сохранения экземпляров.
+
+Общие аргументы полей сериализатора:
+1. read_only
+    Поле только для чтения. По умолчанию False.
+2. write_only
+    Поле только для записи. По умолчанию False.
+3. required
+    Обязательное ли поле. По умолчанию True, если blank=True или default или 
+    null=True, то по умолчанию False.
+4. default
+    Значение по умолчанию. Запрещено default и required одновременно.
+5. allow_null
+    Может ли поле принимать пустое значение. По умолчанию False.
+6. source
+    Имя атрибута для заполнения поля. По умолчанию имя поля.
+7. validators
+    Список функций валидатора для поля.
+8. error_messages
+    Словарь кодов ошибок к сообщениям об ошибках.
+9. label
+    Короткая текстовая строка, означающая имя поля в полях формы HTML.
+10. help_text
+    Текстовая строка, означающая описание поля в полях формы HTML.
+11. initial
+    Значение для предварительного заполнения полей HTML.
+12. style
+    Словарь пар для управления рендерингом полей.
+
+
+Опции полей сериализатора:
+1. allow_blank
+    Допустимо пустое значение.
+2. max_length
+    Макс. кол-во символов.
+3. min_length
+    Мин. кол-во символов.
+4. trim_whitespace
+    Обрезание крайних пробелов.
+5. path
+    Абсолютный путь файловой системы к каталогу с выбором.
+6. regex
+    Строка или скомпилированный обьект регулярного выражения.
+7. format
+    Определяет формат вывода UUID. Возможные значения:
+    hex_verbose
+        Каноническое шестнадцатеричное представление UUID с дефисами.
+    hex
+        Компактное шестнадцатеричное представление UUID без дефисов.
+    int
+        128-битное целочисленное представление UUID.
+    urn
+        RFC 4122 URN представление UUID.
+8. match
+    Регулярное выражение в виде строки для фильтрации имен файлов.
+9. recursive
+    Должны ли включаться все подкаталоги путей.
+10. allow_files
+    Должны ли включаться файлы в указанном месте.
+11. allow_folders
+    Должны ли включаться папки в указанном месте.
+12. protocol
+    Ограничение допустимых входов с указанным протоколом (both, IPv4, IPv6)
+13. unpack_ipv4
+    Распаковка IPv4 адресов. Например: ::ffff:192.0.2.1 -> 192.0.2.1. 
+    Используется только с протоколом 'both'.
+14. max_value
+    Максимальное число.
+15. min_value
+    Минимальное число.
+16. max_digits
+    Максимальное количество цифр в числе. Либо None, либо >= decimal_places.
+17. decimal_places
+    Количество знаков после запятой.
+18. coerce_to_string
+    Возвращать ли в виде строки. По умолчанию COERCE_DECIMAL_TO_STRING.
+19. localize
+    Включать ли локализацию ввода и вывода на основе локали. По умолчанию False.
+20. rounding
+    Режим округления при квантовании с заданной точностью. По умолчанию None.
+21. normalize_output
+    Нормализует десятичное значение при сериализации. Удаляет все нули и 
+    изменяет точность значения, чтобы можно было представить значение без 
+    потери данных. По умолчанию False.
+22. input_formats
+    Список строк форматов для разбора даты. Если не указан, то 
+    DATETIME_INPUT_FORMATS.
+23. default_timezone
+    Подкласс tzinfo, представляющий часовой пояс. Если не указан и USE_TZ=True, 
+    то по умолчанию текущий часовой пояс.
+24. choices
+    Список допустимых значений.
+25. html_cutoff
+    Максимальное количество выводимых вариантов. По умолчанию None. 
+26. allow_empty_file
+    Разрешены ли пустые файлы.
+27. use_url
+    Будут ли представления выходных данных строковыми значениями URL, иначе 
+    значения имени файла.
+28. child
+    Экземпляр поля для проверки обьектов в списке.
+29. binary
+    Будет ли поле выводить и проверять строку в кодировке JSON, а не примитивную 
+    структуру данных. По умолчанию False.
+30. encoder
+    JSON-кодер для сериализации входного обьекта.
+31. method_name
+    Имя метода сериализатора, который будет вызван. По умолчанию get_<имя поля>.
+
+Поля сериализатора:
+1. BooleanField()
+    Булево представление. 
+    Соответствует django.db.models.fiels.BooleanField.
+2. CharField(max_length=None, min_length=None, allow_blank=False, 
+            trim_whitespace=True)
+    Текстовое представление.
+    Соответствует django.db.models.fields.CharField или 
+    django.db.models.fields.TextField.
+3. EmailField(max_length=None, min_length=None, allow_blank=False)
+    Текстовое представление, проверяет является ли текст эпочтой.
+    Соответствует django.db.models.fields.EmailField.
+4. RegexField(regex, max_length=None, min_length=None, allow_blank=False)
+    Текстовое представление, которое проверяет значение регулярным выражением.
+    Соответствует django.db.models.fields.RegexField.
+    Использует django.core.validators.RegexValidator для валидации.
+5. SlugField(max_length=50, min_length=None, allow_blank=False)
+    Поле RegexField, которое проверяет данные по шаблону [a-zA-Z0-9_-]+.
+    Соответствует django.db.models.fields.SlugField.
+6. URLField(max_length=200, min_length=None, allow_blank=False)
+    Поле RegexField, которое проверяет данные по шаблону 'http://<host>/<path>'.
+    Соответствует django.db.models.fields.URLField. 
+    Для валидации использует django.core.validators.URLValidator.
+7. UUIDField(format='hex_verbose')
+    Поле проверяет данные на строку UUID.
+8. FilePathField(path, match=None, recursive=False, allow_files=True, 
+                allow_folders=False, required=None, **kwargs)
+    Поле с именем файла в каталоге в файловой системе.
+    Соответствует django.db.models.fields.FilePathField.
+9. IPAddressField(protocol='both', unpack_ipv4=False, **options)
+    Поле IPv4 или IPv6 в виде строки.
+    Соответствует django.forms.fields.IPAddressField и 
+    django.forms.fields.GenericIPAddressField.
+10. IntegerField(max_value=None, min_value=None)
+    Целочисленное представление.
+    Соответствует django.db.models.fields.IntegerField, 
+    django.db.models.fields.SmallIntegerField, 
+    django.db.models.fields.PositiveIntegerField,
+    django.db.models.fields.PositiveSmallIntegerField.
+11. FloatField(max_value=None, min_value=None)
+    Представление с плавающей точкой.
+    Соответствует django.db.models.fields.FloatField.
+12. DecimalField(max_digits, decimal_places, coerce_to_string=None, 
+                max_value=None, min_value=None)
+    Десятичное представление Decimal.
+    Соответствует django.db.models.fields.DecimalField.
+13. DateTimeField(format=api_settings.DATETIME_FORMAT, input_formats=None, 
+                 default_timezone=None)
+    Представление даты и времени.
+    Соответствует django.db.models.fields.DateTimeField
+14. DateField(format=api_settings.DATE_FORMAT, input_formats=None)
+    Представление даты.
+    Соответствует django.db.models.fields.DateField.
+15. TimeField(format=api_settings.TIME_FORMAT, input_formats=None)
+    Представление времени.
+    Соответствует django.db.models.TimeField.
+16. DurationField(max_value=None, min_value=None)
+    Представление Duration. Экземпляр datetime.timedelta.
+    Соответствует django.db.models.fields.DurationField.
+17. ChoiceField(choices)
+    Поле с вариантами значений.
+18. MultipleChoiceField(choices)
+    Поле с набором из нуля или нескольких значений из ограниченного набора 
+    вариантов.
+19. FileField(max_length=None, allow_empty_file=False, 
+             use_url=UPLOADED_FILES_USE_URL)
+    Использовать только с MultiPartParser или  FileUploadParser.
+    Представление файла.
+    Соответствует django.forms.fields.FileField.
+20. ImageField(max_length=None, allow_empty_file=False, 
+              use_url=UPLOADED_FILES_USE_URL)
+    Использовать только с MultiPartParser или  FileUploadParser. Требует PILLOW.
+    Представление изображения. Проверяет, что файл имеет формат изображения.
+    Соответствует django.forms.fields.ImageField.
+21. ListField(child=<A_FIELD_INSTANCE>, allow_empty=True, min_length=None, 
+             max_length=None)
+    Класс поля, который проверяет список обьектов.
+22. DictField(child=<A_FIELD_INSTANCE>, allow_empty=True)
+    Класс поля, который проверяет словарь обьектов.
+23. HStoreField(child=<A_FIELD_INSTANCE>, allow_empty=True)
+    Предварительно настроенное DictField, совместимое с HStoreField. Дочернее 
+    поле должно быть экземпляром CharField, так как hstore хранит строковые 
+    значения.
+24. JSONField(binary, encoder)
+    Класс поля, который проверяет, что данные в формате JSON.
+25. ReadOnlyField()
+    Возвращает значение поля без модификации.
+26. HiddenField()
+    Принимает значение вызываемого поля, а не значение пользовательского ввода.
+27. ModelField(model_field=<Django ModelField instance>)
+    Предназначен для внутреннего использования (Привязывается к любому полю 
+    модели), но при необходимости может быть использован API.
+28. SerializerMethodField(method_name=None)
+    Доступно только для чтения. Вызывает метод класса сериализатора. 
+    Используется для добавления данных в сериализованное представление.
+29. StringRelatedField(many)
+    Доступно только для чтения. Возвращает обьекты в формате, который указан в 
+    __str__ в модели обьекта. 
+30. PrimaryKeyRelatedField(
+    queryset, # Набор запросов для поиска обьекта модели при проверке ввода 
+              # поля. Либо явно задать queryset, либо установить read_only=True.
+    many,
+    allow_null,
+    pk_field, # Для управления сериализацией/десериализацией значения первичного 
+              # ключа. Например, pk_field=UUIDField(format='hex').
+)
+    Доступно для чтения-записи (изменить read_only). Возвращает обьекты в 
+    формате первичного ключа.
+31. HyperlinkedRelatedField(
+    view_name, # Имя представления для цели отношения. По умолчанию '<>-detail'.
+    queryset,
+    many,
+    allow_null,
+    lookup_field, # Поле цели для поиска, которое соответствует именованному 
+                  # аргменту URL. По умолчанию pk.
+    lookup_url_kwarg, # Имя именованного аргумента в URLconf, которое 
+                      # соответствует полю поиска.
+    format, # Если используются суффиксы формата, то поля с гиперссылками 
+            # используют тот же суффикс формата для цели.
+)
+    Доступно для чтения-записи (изменить read_only). Возвращает список обьектов 
+    в виде ссылок на обьекты.
+32. SlugRelatedField(
+    slug_field, # Поле цели для представления обьекта.
+    queryset,
+    many,
+    allow_null,
+)
+    Доступно для чтения-записи (изменить read_only). Возвращает обьекты с 
+    помощью поля цели.
+33. HyperlinkedIdentityField(
+    view_name: имя представления для цели отношения,
+    lookup_field,
+    lookup_url_kwarg,
+    format
+)
+    Поле только для чтения. Применяется как отношение идентичности.
+
+

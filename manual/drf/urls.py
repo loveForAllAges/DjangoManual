@@ -19,4 +19,7 @@ urlpatterns = [
     path('htmlrenderer/<int:pk>/', UserDetail.as_view()),
     path('statichtmlrenderer/', simple_html_view),
     path('posts', PostListAPIView.as_view()),
+    path('throttle', ThrottleAPIView.as_view()),
+    path('', CustomListAPIView.as_view()),
+    path('<int:pk>', CustomListAPIView.as_view(), name='album-detail'),
 ]

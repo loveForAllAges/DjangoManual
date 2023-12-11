@@ -2,7 +2,9 @@ from rest_framework import (
     views, mixins, generics, authentication, permissions, viewsets, renderers,
 )
 from rest_framework.response import Response
-from rest_framework.throttling import UserRateThrottle
+from rest_framework.throttling import (
+    UserRateThrottle
+)
 from rest_framework.schemas import AutoSchema
 from rest_framework.decorators import (
     api_view, throttle_classes, authentication_classes, permission_classes,
@@ -12,12 +14,18 @@ from rest_framework.decorators import (
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 
-from .serializers import UserSerializer, PostSerializer
-from .models import Post
+from .serializers import UserSerializer, PostSerializer, AlbumSerializer7
+from .models import Post, Album
 from .pagination import (
     StandardResultsSetPagination, CustomLimitOffsetPagination, 
     CustomCursorPagination, CustomPagination
 )
+from .throttling import (
+    CustomAnonRateThrottle, CustomUserRateThrottle, CustomScopedRateThrottle,
+    RandomRateThrottle
+)
+
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class ListUsers(views.APIView):
@@ -40,12 +48,12 @@ class CustomAutoSchema(AutoSchema):
 
 @api_view(['GET'])
 @throttle_classes([OncePerDayUserThrottle])
-@authentication_classes([authentication.TokenAuthentication])
-@permission_classes([permissions.IsAdminUser])
+# @authentication_classes([authentication.TokenAuthentication])
+# @permission_classes([permissions.IsAdminUser])
 @schema(CustomAutoSchema())
 def api_view_func(request):
-    usernames = [user.username for user in User.objects.all()]
-    return Response(usernames)
+    ip = request.META['REMOTE_ADDR']
+    return Response({'ip': ip})
 
 
 class UserList2(generics.ListCreateAPIView):
@@ -108,7 +116,22 @@ def simple_html_view(request):
 class PostListAPIView(generics.ListAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['id', 'body']
+    throttle_classes = [OncePerDayUserThrottle]
+
+
+class ThrottleAPIView(views.APIView):
+    throttle_classes = [RandomRateThrottle]
+    # throttle_scope = 'a'
+    def get(self, request):
+        return Response({'ok': 'ok'})
+
+
+class CustomListAPIView(generics.ListAPIView):
+    queryset = Album.objects.all()
+    serializer_class = AlbumSerializer7
 
 
 
