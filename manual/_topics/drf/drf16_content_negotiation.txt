@@ -1,0 +1,14 @@
+16. Content negotiation (Согласование содержания)
+
+
+Согласование контента - процесс выбора одного из нескольких возможных форматов 
+ответа для возврата клиенту, основанный на предпочтениях клиента или сервера.
+
+Например, при заголовке Accept:
+application/json; indent=4, application/yaml, text/html, */*
+
+Приоритеты будут такие:
+- 'application/json; indent=4'
+- 'application/json', 'application/yaml', 'text/html'
+- '*/*'
+

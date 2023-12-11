@@ -1,0 +1,66 @@
+9. Authentication (Аутентификация)
+
+
+Аутентификация - механизм связывания входящего запроса с набором данных, таких 
+как пользователь, от которого пришел запрос, или токен. Permission и Throttling 
+затем могут использовать эти данные, чтобы определить должен ли запрос быть 
+разрешен.
+
+
+1. BasicAuthentication
+    Использует схему HTTP Basic Authentication, подписанную логином и паролем. 
+    Подходит для тестирования. Ответы без аутентификации приведут к HTTP 401 
+    Unauthorized с заголовком WWW-Authenticate.
+    При успешной аутентификации:
+    - request.user
+        User
+    - request.auth
+        None
+2. TokenAuthentication
+    Использует простую схему аутентификации HTTP на основе токенов. Необходимо в 
+    INSTALLED_APPS добавить 'rest_framework.authtoken'. Для аутентификации ключ 
+    токена должен быть ключен в HTTP-заголовок Authorization. Ключ должен иметь 
+    префикс 'Token '.
+    При успешной аутентификации:
+    - request.user
+        User
+    - request.auth
+        rest_framework.authtoken.models.Token
+
+    Автоматическая генерация токена каждому пользователю, перехватывая сигнал 
+    post_save пользователя:
+    ```python
+    from rest_framework.authtoken.models import Token
+    @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+    def create_auth_token(sender, instance=None, created=False, **kwargs):
+        if created:
+            Token.objects.create(user=instance)
+    ```
+    
+    Генерация токена конечной точкой API:
+    ```python
+    from rest_framework.authtoken import views
+    urlpatterns += [
+        path('auth', views.obtain_auth_token),
+    ]
+    ```
+
+    Создание токена через консоль:
+    python manage.py drf_create_token <username>
+3. SessionAuthentication
+    Использует схему сессий Django для аутентификации. Подходит для AJAX, когда 
+    работа в том же сеансовом контексте, что и сайт. Для безопасности необходимо 
+    использовать CSRF-токен.
+    При успешной аутентификации:
+    - request.user
+        User
+    - request.auth
+        None
+4. RemoteUserAuthentication
+    Использует схему делегирования аутентификации веб-серверу, который 
+    устанавливает переменную REMORE_USER.
+    При успешной аутентификации:
+    - request.user
+        User
+    - request.auth
+        None

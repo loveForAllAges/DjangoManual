@@ -12,6 +12,7 @@ router.register(r'users2', UserModelViewSet, basename='user2')
 
 
 urlpatterns = [
+    path('me', me),
     path('views/', ListUsers.as_view()),
     path('api_view/', api_view_func),
     path('ListCreateAPIView/', UserList2.as_view()),

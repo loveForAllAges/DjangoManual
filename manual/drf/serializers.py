@@ -1,10 +1,14 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.reverse import reverse
+from rest_framework.validators import (
+    UniqueTogetherValidator, UniqueForYearValidator
+)
 
 from .models import Task, Subtask, Album, Track, Post, DataPoint
 
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 import re
 
@@ -449,12 +453,12 @@ class TrackListingField(serializers.RelatedField):
         return 'Track %d: %s (%s)' % (value.order, value.name, duration)
 
 
-class AlbumSerializer9(serializers.ModelSerializer):
-    tracks = TrackListingField(many=True)
+# class AlbumSerializer9(serializers.ModelSerializer):
+#     tracks = TrackListingField(many=True)
 
-    class Meta:
-        model = Album
-        fields = ['album_name', 'artist', 'tracks']
+#     class Meta:
+#         model = Album
+#         fields = ['album_name', 'artist', 'tracks']
 
 
 # Кастомное поле с гиперссылкой.
@@ -477,3 +481,37 @@ class UserHyperlink(serializers.HyperlinkedRelatedField):
            'pk': view_kwargs['customer_pk']
         }
         return self.get_queryset().get(**lookup_kwargs)
+    
+
+# Пример валидатора UniqueTogetherValidator.
+class ExampleSerializer(serializers.Serializer):
+    class Meta:
+        validators = [
+            UniqueTogetherValidator(
+                queryset=User.objects.all(),
+                fields=['field1', 'field2']
+            )
+        ]
+
+
+# Пример валидатора UniqueForYearValidator.
+class ExampleSerializer(serializers.Serializer):
+    class Meta:
+        validators = [
+            UniqueForYearValidator(
+                queryset=Post.objects.all(),
+                field='slug',
+                date_field='published'
+            )
+        ]
+
+
+class ExampleSerializer(serializers.Serializer):
+    # Пример валидатора CurrentUserDefault.
+    owner = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+    # Пример валидатора CreateOnlyDefault.
+    created_at = serializers.DateTimeField(
+        default=serializers.CreateOnlyDefault(timezone.now)
+    )

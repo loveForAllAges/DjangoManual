@@ -134,6 +134,13 @@ class CustomListAPIView(generics.ListAPIView):
     serializer_class = AlbumSerializer7
 
 
+@api_view(['GET'])
+def me(request):
+    return Response({
+        'user': str(request.user),
+        'auth': str(request.auth),
+    })
+
 
 
 """

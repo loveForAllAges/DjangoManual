@@ -372,6 +372,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'rest_framework.authtoken',
+
     'rest_framework',
 
     'dja',
@@ -936,9 +938,12 @@ REST_FRAMEWORK = {
 
     # Список аутентификаторов, используемых при обращении к свойствам 
     # request.user или request.auth
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.SessionAuthentication',
+    #     'rest_framework.authentication.BasicAuthentication'
+    # ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication'
+        'rest_framework.authentication.TokenAuthentication',
     ],
 
     # Список разрешений, проверяемых при запуске представления. 
