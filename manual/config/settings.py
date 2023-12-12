@@ -1093,6 +1093,9 @@ REST_FRAMEWORK = {
 
     # Целое число для указания количества прокси-серверов приложений API.
     'NUM_PROXIES': None,
+
+    # Класс метаданных
+    # 'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
 }
 
 

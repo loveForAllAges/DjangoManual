@@ -1,0 +1,50 @@
+15. Versioning (Управление версиями)
+
+
+Версионность позволяет менять поведение различных клиентов. Она может быть 
+основана либо на URL запроса, либо на заголовках запроса.
+
+request.version содержит строку с версией, запрошенной в запросе.
+
+Схема версионирования:
+DEFAULT_VERSIONING_CLASS: 'rest_framework.versioning.NamespaceVersioning'
+ИЛИ:
+versioning_class = versioning.QueryParametrVersioning
+
+AcceptHeaderVersioning
+    Эта схема требует от клиента указать версия как часть типа меди в заголовке 
+    Accept (Accept: application/json; version=1.0). 
+URLPathVersioning
+    Эта схема требует, чтобы клиент указывал версию как часть путь URL (GET 
+    /v1/bookings/ HTTP/1.1). URLconf должен включать шаблон соответствующей 
+    версии с именованным аргументом version.
+NamespaceVersioning
+    Эта схема аналогична URLPathVersioning, но использует интервалы между 
+    именами URL, вместо именованных аргументов URL. request.version определяется 
+    на основе namespace.
+
+    ```python
+    # bookings/urls.py
+    urlpatterns = [
+        re_path(r'^$', bookings_list, name='bookings-list'),
+        re_path(r'^(?P<pk>[0-9]+)/$', bookings_detail, name='bookings-detail')
+    ]
+
+    # urls.py
+    urlpatterns = [
+        re_path(r'^v1/bookings/', include('bookings.urls', namespace='v1')),
+        re_path(r'^v2/bookings/', include('bookings.urls', namespace='v2'))
+    ]
+    ```
+HostNameVersioning
+    Эта схема требует, чтобы клиент указал запрашиваемую версию как часть имени 
+    хоста в URL (http://v1.example.com/bookings/). По умолчанию ожидает, что 
+    будет соответствовать этому '^([a-zA-Z0-9]+)\.[a-zA-Z0-9]+\.[a-zA-Z0-9]+$'.
+QueryParametrVersioning
+    Эта схема требует, чтобы пользователь указал запрашиваему версию в 
+    параметрах запроса (GET /something/?version=0.1 HTTP/1.1).
+
+Кастомная схема версионирования
+class XAPIVersionScheme(versioning.BaseVersioning):
+    def determine_version(self, request, *args, **kwargs):
+        return request.META.get('HTTP_X_API_VERSION', None)

@@ -1,0 +1,26 @@
+19. Format suffixes (Суффиксы формата)
+
+
+Пример: 'http://example.com/api/users.json'.
+
+format_suffix_patterns(
+    urlpatterns, # Список шаблонов URL.
+    suffix_required=False, # Должны ли суффиксы в URL быть обязательными. По 
+                           # умолчанию False.
+    allowed=None, # Список допустимых суффиксов формата. По умолчанию шаблон 
+                  # суффикса формата.
+)
+    Возвращает список шаблонов URL, который включает шаблоны суффиксов формата, 
+    добавленные к каждому шаблону.
+
+Пример:
+urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])
+
+@api_view(['GET', 'POST'])
+def comment_list(request, format=None):
+    pass
+
+class CommentList(APIView):
+    def get(self, request, format=None):
+        pass
+

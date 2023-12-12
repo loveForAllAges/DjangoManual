@@ -1,0 +1,18 @@
+17. Metadata (Метаданные)
+
+
+DRF имеет механизм реагирования на OPTIONS запросы. Он возвращает схему API или 
+другую информацию.
+
+
+# Кастомный класс метаданных
+class MinimalMetadata(BaseMetadata):
+    """
+    Don't include field and other information for `OPTIONS` requests.
+    Just return the name and description.
+    """
+    def determine_metadata(self, request, view):
+        return {
+            'name': view.get_view_name(),
+            'description': view.get_view_description()
+        }

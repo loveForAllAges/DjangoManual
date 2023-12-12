@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.throttling import (
     UserRateThrottle
 )
+from rest_framework.metadata import SimpleMetadata
 from rest_framework.schemas import AutoSchema
 from rest_framework.decorators import (
     api_view, throttle_classes, authentication_classes, permission_classes,
@@ -142,6 +143,14 @@ def me(request):
     })
 
 
+class APIRoot(views.APIView):
+    metadata_class = SimpleMetadata
+
+    def get(self, request, format=None):
+        meta = self.metadata_class()
+        data = meta.determine_metadata(request, self)
+        return Response(data)
+    
 
 """
 Пример документирования API:
